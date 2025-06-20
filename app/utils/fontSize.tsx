@@ -3,5 +3,5 @@ export const Fonts = {
   normal: 18,
   large: 22,
   xlarge: 26,
-  xxlarge: 30,
+  xxlarge: 36,
 };

@@ -4,15 +4,29 @@ import { Text, View } from 'react-native';
 import { navigationRef } from './RootNavigator';
 import AuthNavigator from './AuthNavigator';
 import HomeNavigator from './HomeNavigator';
+import { useSelector } from 'react-redux';
+import SplashScreen from '../screens/Splash';
+import LoadingScreen from '../components/Loading';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const AppNavigator = () => {
-  const [isLogin, SetIsLogin] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
+  const { token } = useSelector((state: any) => state.user);
+
+  useEffect(() => {
+    // delay splash 1.5s để hiển thị logo
+    const timeout = setTimeout(() => {
+      setShowSplash(false);
+    }, 1500);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  if (showSplash) {
+    return <SplashScreen onAnimationEnd={() => setShowSplash(false)} />;
+  }
 
   return (
     <NavigationContainer ref={navigationRef}>
-      {
-        //   isLogin ? <HomeNavigator /> :
-        <AuthNavigator />
-      }
+      {token ? <HomeNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 };

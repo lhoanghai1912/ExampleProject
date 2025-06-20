@@ -1,11 +1,13 @@
 // app/redux/store.ts
 
 import { configureStore } from '@reduxjs/toolkit';
-import { userReducer } from './userSlice'; // Import reducer chính
+import { userReducer } from './reducers/userSlice'; // Import reducer chính
+import { loadingReducer } from './reducers/loadingSlice';
 
 const store = configureStore({
   reducer: {
     user: userReducer,
+    loading: loadingReducer,
   }, // Cấu hình reducer chính
 });
 

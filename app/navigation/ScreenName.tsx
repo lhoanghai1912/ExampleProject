@@ -5,7 +5,11 @@ export const Screen_Name = {
 
   //AppStack
   Home_Screen: 'Home_Screen',
+  Menu_Screen: 'Menu_Screen',
+  Report_Screen: 'Report_Screen',
+  Transaction_Screen: 'Transaction_Screen',
   Setting_Screen: 'Setting_Screen',
+  User_Screen: 'User_Screen',
 
   //Other
   Splash_Screen: 'Splash_Screen',
