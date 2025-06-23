@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, Image, Animated } from 'react-native';
 import { IMAGES } from '../../utils/constants';
 import AppStyles from '../../components/AppStyle';
 import { Colors } from '../../utils/color';
+import { Spacing } from '../../utils/spacing';
 
 const SplashScreen = ({ onAnimationEnd }: { onAnimationEnd: () => void }) => {
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -24,10 +25,7 @@ const SplashScreen = ({ onAnimationEnd }: { onAnimationEnd: () => void }) => {
     <Animated.View
       style={[styles.container, { transform: [{ translateY: fadeAnim }] }]}
     >
-      <Image
-        source={IMAGES.foxAI}
-        style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
-      ></Image>
+      <Image source={IMAGES.foxAI} style={styles.splash}></Image>
       <Text style={AppStyles.text}>Loading ...</Text>
     </Animated.View>
   );
@@ -39,6 +37,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Colors.primary,
+    paddingVertical: Spacing.xxlarge,
+    paddingHorizontal: Spacing.lagre,
+  },
+  splash: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+    marginVertical: Spacing.xxlarge,
+    marginHorizontal: Spacing.lagre,
   },
 });
 

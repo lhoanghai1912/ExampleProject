@@ -57,17 +57,23 @@ const AppInput: React.FC<AppInputProps> = ({
           <TouchableOpacity onPress={handleShowHide}>
             <Image
               source={isShow ? ICONS.show : ICONS.hide}
-              style={AppStyles.icon}
+              style={[AppStyles.icon, { display: value ? 'flex' : 'none' }]}
             ></Image>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleClear}>
-            <Image source={ICONS.clear} style={AppStyles.icon}></Image>
+            <Image
+              source={ICONS.clear}
+              style={[AppStyles.icon, { display: value ? 'flex' : 'none' }]}
+            ></Image>
           </TouchableOpacity>
         </View>
       ) : (
         <View style={AppStyles.iconGroup}>
           <TouchableOpacity onPress={handleClear}>
-            <Image source={ICONS.clear} style={AppStyles.icon}></Image>
+            <Image
+              source={ICONS.clear}
+              style={[AppStyles.icon, { display: value ? 'flex' : 'none' }]}
+            ></Image>
           </TouchableOpacity>
         </View>
       )}
@@ -83,7 +89,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   label: {
-    fontSize: Fonts.small,
+    fontSize: Fonts.large,
     marginBottom: Spacing.small,
     color: '#333',
   },

@@ -13,7 +13,7 @@ import { Spacing } from '../utils/spacing';
 import { Fonts } from '../utils/fontSize';
 
 interface AppButtonProps {
-  key?: number;
+  // key?: number;
   onPress: () => void; // Hàm khi nhấn nút
   title: string; // Tiêu đề nút
   customStyle?: ViewStyle[]; // Custom style cho nút
@@ -21,7 +21,7 @@ interface AppButtonProps {
 }
 
 const AppButton: React.FC<AppButtonProps> = ({
-  key,
+  // key,
   onPress,
   title,
   customStyle = [],
@@ -29,7 +29,7 @@ const AppButton: React.FC<AppButtonProps> = ({
 }) => {
   return (
     <TouchableOpacity
-      key={key}
+      // key={key}
       disabled={disabled}
       onPress={onPress}
       style={[

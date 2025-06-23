@@ -1,0 +1,20 @@
+//login
+curl -X POST  -H "accept:application/json, text/plain, */*" -H "content-type:application/json" https://wms.foxai.com.vn:50000/b1s/v1/Login -d '{"CompanyDB":"DEMO - 2","UserName":"manager","Password":"sapb1"}'
+
+//số ca
+curl -H "accept:*/*" https://wms.foxai.com.vn:50000/b1s/v1/U_CASX
+//công đoạn
+ curl -H "accept:*/*" https://wms.foxai.com.vn:50000/b1s/v1/U_CONGDOAN
+// so may
+curl -H "accept:*/*" https://wms.foxai.com.vn:50000/b1s/v1/U_MAYMOCTHIETBI
+https://wms.foxai.com.vn:50000/b1s/v1/UnitOfMeasurements?$select = AbsEntry,Code,Name&$orderby=AbsEntry&$inlinecount=allpages&$top=10&$skip=1
+Đơn vị tính
+https://wms.foxai.com.vn:50000/b1s/v1/UnitOfMeasurementGroups?$orderby=AbsEntry&$inlinecount=allpages&$top=10&$skip=1
+Nhóm đơn vị tính
+https://wms.foxai.com.vn:50000/b1s/v1/ItemGroups?$select = Number,GroupName&$inlinecount=allpages&$top=10&$skip=0
+
+Nhóm hàng hóa
+// lenh san xuat 
+curl -H "accept:*/*" https://wms.foxai.com.vn:50000/b1s/v1/ProductionOrders?%24filter=ProductionOrderStatus%20eq%20%27boposReleased%27
+// dong vi tinh trong lenh san xuat
+curl -H "accept:*/*" https://wms.foxai.com.vn:50000/b1s/v1/UnitOfMeasurements?$select%20=%20AbsEntry,Code,Name&$orderby=AbsEntry&$inlinecount=allpages&$top=100&$skip=0

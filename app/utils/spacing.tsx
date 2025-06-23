@@ -4,4 +4,5 @@ export const Spacing = {
   lagre: 24,
   xlarge: 32,
   xxlarge: 40,
+  xxxlarge: 60,
 };

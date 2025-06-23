@@ -32,7 +32,7 @@ const NavBar = ({ title, onPress }: any) => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            navigate(Screen_Name.User_Screen);
+            navigate(Screen_Name.UserInfo_Screen);
           }}
         >
           <Image source={ICONS.info} style={AppStyles.icon}></Image>
