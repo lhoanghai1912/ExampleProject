@@ -6,6 +6,7 @@ import AppStyles from '../../../components/AppStyle';
 import AppInput from '../../../components/AppInput';
 import { Spacing } from '../../../utils/spacing';
 import AppButton from '../../../components/AppButton';
+import AppToast from '../../../components/AppToast';
 
 interface Props {
   navigation: any;
@@ -17,6 +18,20 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
   const [Fullname, setFullname] = useState('');
   const [Department, setDepartment] = useState('');
   const [Center, setCenter] = useState('');
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+
+  const handleSummit = () => {
+    // Handle submit logic here
+    if (!Username || !Password || !Fullname || !Department || !Center) {
+      setToastMessage('Vui lòng điền đầy đủ thông tin');
+      setToastVisible(true);
+      return;
+    } else {
+      setToastMessage('Thông tin đã được cập nhật thành công');
+      setToastVisible(true);
+    }
+  };
   return (
     <View style={styles.container}>
       <NavBar title={TITLES.user} onPress={() => navigation.goBack()} />
@@ -59,9 +74,7 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
             />
           </View>
           <AppButton
-            onPress={() => {
-              console.log('pressed');
-            }}
+            onPress={() => handleSummit()}
             title={TITLES.accept}
             customStyle={[
               { marginTop: Spacing.xlarge, marginHorizontal: Spacing.medium },
@@ -70,6 +83,12 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
         </View>
         <View style={AppStyles.footer}></View>
       </View>
+      <AppToast
+        message={toastMessage}
+        visible={toastVisible}
+        duration={3000}
+        onHide={() => setToastVisible(false)}
+      />
     </View>
   );
 };

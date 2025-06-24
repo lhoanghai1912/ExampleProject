@@ -12,7 +12,7 @@ import { Screen_Name } from '../navigation/ScreenName';
 const NavBar = ({ title, onPress }: any) => {
   return (
     <View style={styles.navBar}>
-      <View style={[AppStyles.iconGroup, { position: 'relative' }]}>
+      <View style={[styles.iconGroup, { width: 'auto', height: 'auto' }]}>
         <TouchableOpacity onPress={onPress}>
           <Image
             source={ICONS.back}
@@ -21,8 +21,7 @@ const NavBar = ({ title, onPress }: any) => {
         </TouchableOpacity>
       </View>
       <Text style={styles.navTitle}>{title}</Text>
-      <TouchableOpacity onPress={onPress}></TouchableOpacity>
-      <View style={[AppStyles.iconGroup, { position: 'relative' }]}>
+      <View style={[AppStyles.iconGroup, styles.iconGroup]}>
         <TouchableOpacity
           onPress={() => {
             navigate(Screen_Name.Setting_Screen);
@@ -46,6 +45,7 @@ const styles = StyleSheet.create({
   navBar: {
     flexDirection: 'row',
     alignItems: 'center',
+    alignContent: 'center',
     justifyContent: 'space-between',
     padding: Spacing.small,
     backgroundColor: Colors.primary,
@@ -54,7 +54,14 @@ const styles = StyleSheet.create({
   navTitle: {
     fontSize: Fonts.xxlarge,
     color: Colors.white,
-    paddingLeft: 90,
+    textAlign: 'center',
+    flex: 1,
+  },
+  iconGroup: {
+    position: 'relative',
+    justifyContent: 'center',
+    top: 0,
+    alignItems: 'center',
   },
 });
 

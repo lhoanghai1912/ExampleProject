@@ -24,6 +24,7 @@ export const ICONS = {
   clear: require('../assets/icons/clear.png'),
   setting: require('../assets/icons/settings.png'),
   info: require('../assets/icons/user.png'),
+  scan: require('../assets/icons/scanner.png'),
 };
 
 export const IMAGES = {

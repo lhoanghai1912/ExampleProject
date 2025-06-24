@@ -30,6 +30,7 @@ const AppInput: React.FC<AppInputProps> = ({
   style,
   label,
   error,
+  editable,
   ...props
 }) => {
   const [isShow, setIsShow] = useState(false);
@@ -43,6 +44,7 @@ const AppInput: React.FC<AppInputProps> = ({
     <View style={styles.wrapper}>
       {label && <Text style={styles.label}>{label}</Text>}
       <TextInput
+        editable={editable}
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
@@ -52,31 +54,32 @@ const AppInput: React.FC<AppInputProps> = ({
         placeholderTextColor="#999"
         {...props}
       />
-      {secureTextEntry ? (
-        <View style={AppStyles.iconGroup}>
-          <TouchableOpacity onPress={handleShowHide}>
-            <Image
-              source={isShow ? ICONS.show : ICONS.hide}
-              style={[AppStyles.icon, { display: value ? 'flex' : 'none' }]}
-            ></Image>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleClear}>
-            <Image
-              source={ICONS.clear}
-              style={[AppStyles.icon, { display: value ? 'flex' : 'none' }]}
-            ></Image>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <View style={AppStyles.iconGroup}>
-          <TouchableOpacity onPress={handleClear}>
-            <Image
-              source={ICONS.clear}
-              style={[AppStyles.icon, { display: value ? 'flex' : 'none' }]}
-            ></Image>
-          </TouchableOpacity>
-        </View>
-      )}
+      {editable &&
+        (secureTextEntry ? (
+          <View style={AppStyles.iconGroup}>
+            <TouchableOpacity onPress={handleShowHide}>
+              <Image
+                source={isShow ? ICONS.show : ICONS.hide}
+                style={[AppStyles.icon, { display: value ? 'flex' : 'none' }]}
+              ></Image>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleClear}>
+              <Image
+                source={ICONS.clear}
+                style={[AppStyles.icon, { display: value ? 'flex' : 'none' }]}
+              ></Image>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={AppStyles.iconGroup}>
+            <TouchableOpacity onPress={handleClear}>
+              <Image
+                source={ICONS.clear}
+                style={[AppStyles.icon, { display: value ? 'flex' : 'none' }]}
+              ></Image>
+            </TouchableOpacity>
+          </View>
+        ))}
 
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
