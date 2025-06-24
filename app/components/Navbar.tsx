@@ -6,7 +6,6 @@ import { Fonts } from '../utils/fontSize';
 import { Colors } from '../utils/color';
 import { Spacing } from '../utils/spacing';
 import { navigate } from '../navigation/RootNavigator';
-import { Screen } from 'react-native-screens';
 import { Screen_Name } from '../navigation/ScreenName';
 
 const NavBar = ({ title, onPress }: any) => {

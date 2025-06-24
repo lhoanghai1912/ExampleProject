@@ -38,6 +38,14 @@ const AppStyles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: Spacing.medium,
   },
+
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: Spacing.medium,
+  },
+  scrollContent: {
+    paddingBottom: Spacing.lagre, // Đảm bảo có đủ không gian khi cuộn
+  },
 });
 
 export default AppStyles;

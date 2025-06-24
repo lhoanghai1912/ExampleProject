@@ -17,8 +17,8 @@ interface Props {
 }
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('sapb1');
+  const [username, setUsername] = useState('manager');
   const dispatch = useDispatch();
   const token1 = '123abc';
   const data = [username, password];
@@ -35,6 +35,41 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     } catch (error) {
       console.log('error ', error);
     }
+
+    // try {
+    //   const response = await fetch('https://160.30.252.14:50000/b1s/v1/Login', {
+    //     method: 'POST',
+    //     headers: {
+    //       Accecpt: 'application/json, text/plain, */*',
+    //       'Accept-Encoding': 'gzip, deflate, br',
+    //       'Content-Type': 'application/json',
+    //       Connection: 'keep-alive',
+    //     },
+    //     body: JSON.stringify({
+    //       CompanyDB: 'DEMO - 2',
+    //       UserName: 'manager',
+    //       Password: 'sapb1',
+    //     }),
+    //   });
+    //   console.log('abcccccc');
+
+    //   const data = await response.json();
+    //   if (response.ok) {
+    //     console.log('Login successful', data);
+    //     return data;
+    //   } else {
+    //     console.error('Login failed', data);
+    //     return null;
+    //   }
+    // } catch (error) {
+    //   console.error('Error during login:', error);
+    //   console.log('Error during login:', error);
+
+    //   return null;
+    // }
+  };
+  const handleLogin1 = async () => {
+    console.log('Login1 Pressed');
   };
 
   return (

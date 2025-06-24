@@ -10,6 +10,7 @@ import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
 import { Spacing } from '../../utils/spacing';
 import { dataOption } from './dataOption';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const handleLogout = async () => {
@@ -22,18 +23,21 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <NavBar title={TITLES.home} style={AppStyles.header}></NavBar>
-      <View style={AppStyles.body}>
-        <View style={styles.buttonGroup}>
-          {dataOption.map(item => (
-            <AppButton
-              customStyle={[{ marginBottom: Spacing.lagre }]}
-              key={item.id}
-              title={item.title}
-              onPress={() => handleButtonPress(item.screenName)}
-            />
-          ))}
+      <KeyboardAwareScrollView scrollEnabled>
+        <View style={AppStyles.body}>
+          <View style={styles.buttonGroup}>
+            {dataOption.map(item => (
+              <AppButton
+                customStyle={[{ marginBottom: Spacing.lagre }]}
+                key={item.id}
+                title={item.title}
+                onPress={() => handleButtonPress(item.screenName)}
+              />
+            ))}
+          </View>
         </View>
-      </View>
+      </KeyboardAwareScrollView>
+
       <AppButton title={TITLES.logout} onPress={handleLogout}></AppButton>
     </View>
   );

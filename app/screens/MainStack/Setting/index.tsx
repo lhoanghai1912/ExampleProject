@@ -189,7 +189,6 @@ const SettingScreen: React.FC<Props> = ({ navigation }) => {
               onSubmit={val => handleValueSubmit(val, 'Số máy')}
             />
           </View>
-          {/* Custom Toast */}
           <AppButton
             onPress={() => handleSettingSubmit()}
             title={TITLES.accept}
@@ -200,6 +199,7 @@ const SettingScreen: React.FC<Props> = ({ navigation }) => {
         </View>
         <View style={AppStyles.footer}></View>
       </View>
+      {/* Custom Toast */}
       <AppToast
         message={toastMessage}
         visible={toastVisible}

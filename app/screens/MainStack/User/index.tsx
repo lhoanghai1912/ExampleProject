@@ -7,6 +7,7 @@ import AppInput from '../../../components/AppInput';
 import { Spacing } from '../../../utils/spacing';
 import AppButton from '../../../components/AppButton';
 import AppToast from '../../../components/AppToast';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 interface Props {
   navigation: any;
@@ -35,54 +36,56 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <NavBar title={TITLES.user} onPress={() => navigation.goBack()} />
-      <View style={AppStyles.body}>
-        <View style={styles.wrapBody}>
-          {/* <Text
+      <KeyboardAwareScrollView scrollEnabled>
+        <View style={AppStyles.body}>
+          <View style={styles.wrapBody}>
+            {/* <Text
             style={[AppStyles.title, { marginBottom: Spacing.xlarge }]}
           >{`Thông tin người dùng`}</Text> */}
-          <View>
-            <AppInput
-              label="Username"
-              placeholder="Username"
-              value={Username}
-              onChangeText={setUsername}
-            />
-            <AppInput
-              label="Password"
-              placeholder="Password"
-              value={Password}
-              onChangeText={setPassword}
-              secureTextEntry={true}
-            />
-            <AppInput
-              label="Fullname"
-              placeholder="Fullname"
-              value={Fullname}
-              onChangeText={setFullname}
-            />
-            <AppInput
-              label="Department"
-              placeholder="Department"
-              value={Department}
-              onChangeText={setDepartment}
-            />
-            <AppInput
-              label="Center"
-              placeholder="Center"
-              value={Center}
-              onChangeText={setCenter}
-            />
+            <View>
+              <AppInput
+                label="Username"
+                placeholder="Username"
+                value={Username}
+                onChangeText={setUsername}
+              />
+              <AppInput
+                label="Password"
+                placeholder="Password"
+                value={Password}
+                onChangeText={setPassword}
+                secureTextEntry={true}
+              />
+              <AppInput
+                label="Fullname"
+                placeholder="Fullname"
+                value={Fullname}
+                onChangeText={setFullname}
+              />
+              <AppInput
+                label="Department"
+                placeholder="Department"
+                value={Department}
+                onChangeText={setDepartment}
+              />
+              <AppInput
+                label="Center"
+                placeholder="Center"
+                value={Center}
+                onChangeText={setCenter}
+              />
+            </View>
+            <AppButton
+              onPress={() => handleSummit()}
+              title={TITLES.accept}
+              customStyle={[
+                { marginTop: Spacing.xlarge, marginHorizontal: Spacing.medium },
+              ]}
+            ></AppButton>
           </View>
-          <AppButton
-            onPress={() => handleSummit()}
-            title={TITLES.accept}
-            customStyle={[
-              { marginTop: Spacing.xlarge, marginHorizontal: Spacing.medium },
-            ]}
-          ></AppButton>
+          <View style={AppStyles.footer}></View>
         </View>
-        <View style={AppStyles.footer}></View>
-      </View>
+      </KeyboardAwareScrollView>
       <AppToast
         message={toastMessage}
         visible={toastVisible}
