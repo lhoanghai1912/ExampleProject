@@ -20,6 +20,9 @@ import CalendarModal from '../../../../../components/Modal/DateTime';
 import moment from 'moment';
 import AppToast from '../../../../../components/AppToast';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import CustomDropdown from '../../../../../components/DropDown';
+import { navigate } from '../../../../../navigation/RootNavigator';
+import { Screen_Name } from '../../../../../navigation/ScreenName';
 
 interface Props {
   navigation: any;
@@ -59,6 +62,18 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
     // Lưu dữ liệu vào AsyncStorage khi người dùng nhấn nút Submit
     try {
       console.log('Data saved successfully');
+      if (!lenhSX || !soCa || !congDoan || !soMay) {
+        setToastMessage('Vui lòng chọn đầy đủ các trường');
+        setToastVisible(true);
+
+        return;
+      }
+      // Xử lý khi người dùng nhấn nút "Xác nhận"
+      await AsyncStorage.setItem('LenhSX', lenhSX);
+      await AsyncStorage.setItem('SoCa', soCa);
+      await AsyncStorage.setItem('CongDoan', congDoan);
+      await AsyncStorage.setItem('SoMay', soMay);
+      navigate(Screen_Name.Home_Screen);
     } catch (error) {
       console.error('Error saving data: ', error);
     }
@@ -81,10 +96,53 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
     setDocDate(date);
     setModalCalendarVisible(false);
   };
+  const handleValueSubmit = (val: string, dropdownName: string) => {
+    console.log('Selected value:', val);
+    // Cập nhật các state với giá trị đã chọn
+    switch (dropdownName) {
+      case 'Lệnh sản xuất':
+        setLenhSX(val);
+        break;
+      case 'Số ca':
+        setSoCa(val);
+        break;
+      case 'Công đoạn':
+        setCongDoan(val);
+        break;
+      case 'Số máy':
+        setSoMay(val);
+        break;
+    }
+  };
+  const handleSubmit = async () => {
+    // Kiểm tra các trường thông tin
+    if (!lenhSX || !soCa || !soMay || !congDoan) {
+      setToastMessage('Vui lòng điền đầy đủ thông tin');
+      setToastVisible(true);
+      return;
+    }
+
+    // Lưu dữ liệu vào AsyncStorage
+    try {
+      await AsyncStorage.setItem('LenhSX', lenhSX);
+      await AsyncStorage.setItem('SoCa', soCa);
+      await AsyncStorage.setItem('CongDoan', congDoan);
+      await AsyncStorage.setItem('SoMay', soMay);
+      setToastMessage('Dữ liệu đã được lưu thành công');
+      setToastVisible(true);
+      setTimeout(() => {
+        navigation.goBack(); // Navigate back after 1.5 seconds
+      }, 500);
+    } catch (error) {
+      console.error('Error saving data:', error);
+      setToastMessage('Lỗi khi lưu dữ liệu');
+      setToastVisible(true);
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
-        <NavBar title="Xuất Kho Sản Xuất" onPress={() => navigation.goBack()} />
+        <NavBar title="Xuất Kho Sản Xuất" navigation={navigation} />
         <KeyboardAwareScrollView
           style={AppStyles.scrollView}
           scrollEnabled
@@ -142,16 +200,29 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
                   <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
                     <AppInput label="Số phiếu" editable={false}></AppInput>
                     <AppInput label="Số lô" editable={false}></AppInput>
-                    <AppInput
+                    <CustomDropdown
                       label="Lệnh sản xuất"
-                      editable={false}
+                      placeHolder="Chọn Lệnh sản xuất"
+                      options={['CT1', 'CT2', 'CT3']}
                       value={lenhSX}
-                    ></AppInput>
-                    <AppInput
+                      onSubmit={val => handleValueSubmit(val, 'Lệnh sản xuất')}
+                    />
+                    <CustomDropdown
                       label="Số máy"
-                      editable={false}
+                      placeHolder="Chọn Số máy"
+                      options={[
+                        'Số máy 1',
+                        'Số máy 2',
+                        'Số máy 3',
+                        'Số máy 4',
+                        'Số máy 5',
+                        'Số máy 6',
+                        'Số máy 7',
+                        'Số máy 8',
+                      ]}
                       value={soMay}
-                    ></AppInput>
+                      onSubmit={val => handleValueSubmit(val, 'Số máy')}
+                    />
                   </View>
                   <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
                     <TouchableOpacity
@@ -166,16 +237,20 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
                       ></AppInput>
                     </TouchableOpacity>
                     <AppInput label="Kho xuất" editable={false}></AppInput>
-                    <AppInput
+                    <CustomDropdown
                       label="Số ca"
-                      editable={false}
+                      placeHolder="Chọn Số ca"
+                      options={['Ca 1', 'Ca 2', 'Ca 3']}
                       value={soCa}
-                    ></AppInput>
-                    <AppInput
+                      onSubmit={val => handleValueSubmit(val, 'Số ca')}
+                    />
+                    <CustomDropdown
                       label="Công đoạn"
-                      editable={false}
+                      placeHolder="Chọn Công đoạn"
+                      options={['Công đoạn 1', 'Công đoạn 2', 'Công đoạn 3']}
                       value={congDoan}
-                    ></AppInput>
+                      onSubmit={val => handleValueSubmit(val, 'Công đoạn')}
+                    />
                   </View>
                 </View>
               </View>
@@ -212,7 +287,7 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
             </View>
             <AppButton
               title={TITLES.accept}
-              onPress={() => onSubmit()}
+              onPress={() => handleSubmit()}
               customStyle={[{ marginHorizontal: Spacing.xxxlarge }]}
             ></AppButton>
           </View>

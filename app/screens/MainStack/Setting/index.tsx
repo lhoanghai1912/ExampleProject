@@ -12,88 +12,106 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { navigate } from '../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../navigation/ScreenName';
 import AppToast from '../../../components/AppToast';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../redux/reducers/userSlice';
 
 interface Props {
   navigation: any;
   route: any;
 }
 const SettingScreen: React.FC<Props> = ({ navigation }) => {
-  const [value1, setValue1] = useState('');
-  const [value2, setValue2] = useState('');
-  const [value3, setValue3] = useState('');
-  const [value4, setValue4] = useState('');
+  const [lenhSX, setLenhSX] = useState('');
+  const [soCa, setSoCa] = useState('');
+  const [congDoan, setCongDoan] = useState('');
+  const [soMay, setSoMay] = useState('');
   const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const getMachines = async () => {
-    try {
-      // Gọi API Login để lấy session
-      const loginRes = await HttpClient.post('/Login', {
-        CompanyDB: 'DEMO - 2',
-        UserName: 'manager',
-        Password: 'sapb1',
-      });
+  const dispatch = useDispatch();
 
-      const sessionId = loginRes.SessionId;
-      const routeId = loginRes.RouteId;
+  // const getMachines = async () => {
+  //   try {
+  //     // Gọi API Login để lấy session
+  //     const loginRes = await HttpClient.post('/Login', {
+  //       CompanyDB: 'DEMO - 2',
+  //       UserName: 'manager',
+  //       Password: 'sapb1',
+  //     });
 
-      // Gọi API lấy danh sách máy móc
-      const res = await getDanhSachMayMoc(
-        // 'B1SESSION=b9457d16-4ffe-11f0-8000-00505698cb93',
-        // '.node5',
-        sessionId,
-        routeId,
-      );
-      setData(res.value || []);
-    } catch (err) {
-      console.error('❌ Không thể load máy móc:', err);
-    }
-  };
+  //     const sessionId = loginRes.SessionId;
+  //     const routeId = loginRes.RouteId;
 
+  //     // Gọi API lấy danh sách máy móc
+  //     const res = await getDanhSachMayMoc(
+  //       // 'B1SESSION=b9457d16-4ffe-11f0-8000-00505698cb93',
+  //       // '.node5',
+  //       sessionId,
+  //       routeId,
+  //     );
+  //     setData(res.value || []);
+  //   } catch (err) {
+  //     console.error('❌ Không thể load máy móc:', err);
+  //   }
+  // };
+  // useEffect(() => {
+  //   getMachines();
+  // }, []);
   useEffect(() => {
-    getMachines();
-  }, []);
+    // Lấy dữ liệu từ AsyncStorage khi màn hình được render
+    const loadData = async () => {
+      const lenhSXValue = await AsyncStorage.getItem('LenhSX');
+      const soCaValue = await AsyncStorage.getItem('SoCa');
+      const congDoanValue = await AsyncStorage.getItem('CongDoan');
+      const soMayValue = await AsyncStorage.getItem('SoMay');
 
-  const handleClose = () => {
-    //
-  };
+      if (lenhSXValue) setLenhSX(lenhSXValue);
+      if (soCaValue) setSoCa(soCaValue);
+      if (congDoanValue) setCongDoan(congDoanValue);
+      if (soMayValue) setSoMay(soMayValue);
+    };
+
+    loadData();
+  }, []);
 
   const handleValueSubmit = (val: string, dropdownName: string) => {
     console.log('Selected value:', val);
     // Cập nhật các state với giá trị đã chọn
     switch (dropdownName) {
       case 'Lệnh sản xuất':
-        setValue1(val);
+        setLenhSX(val);
         break;
       case 'Số ca':
-        setValue2(val);
+        setSoCa(val);
         break;
       case 'Công đoạn':
-        setValue3(val);
+        setCongDoan(val);
         break;
       case 'Số máy':
-        setValue4(val);
+        setSoMay(val);
         break;
     }
-    console.log('vale1 after submit ', value1);
 
     // handleClose(); // Đóng modal và reset giá trị
   };
 
   const handleSettingSubmit = async () => {
-    if (!value1 || !value2 || !value3 || !value4) {
+    if (!lenhSX || !soCa || !congDoan || !soMay) {
       setToastMessage('Vui lòng chọn đầy đủ các trường');
       setToastVisible(true);
 
       return;
     }
     // Xử lý khi người dùng nhấn nút "Xác nhận"
-    await AsyncStorage.setItem('LenhSX', value1);
-    await AsyncStorage.setItem('SoCa', value2);
-    await AsyncStorage.setItem('CongDoan', value3);
-    await AsyncStorage.setItem('SoMay', value4);
-    navigate(Screen_Name.Menu_Screen);
+    await AsyncStorage.setItem('LenhSX', lenhSX);
+    await AsyncStorage.setItem('SoCa', soCa);
+    await AsyncStorage.setItem('CongDoan', congDoan);
+    await AsyncStorage.setItem('SoMay', soMay);
+    navigate(Screen_Name.Home_Screen);
+  };
+  const handleLogout = async () => {
+    dispatch(logout());
+    await AsyncStorage.clear(); // Xóa tất cả dữ liệu trong AsyncStorage
   };
   return (
     <View style={styles.container}>
@@ -104,28 +122,25 @@ const SettingScreen: React.FC<Props> = ({ navigation }) => {
             style={[AppStyles.title, { marginBottom: Spacing.xlarge }]}
           >{`Thiết lập ca làm việc`}</Text>
           <View>
-            <CustomDropdown
+            {/* <CustomDropdown
               label="Lệnh sản xuất"
               placeHolder="Chọn Lệnh sản xuất"
               options={['CT1', 'CT2', 'CT3']}
-              value={value1}
-              onClose={handleClose}
+              value={lenhSX}
               onSubmit={val => handleValueSubmit(val, 'Lệnh sản xuất')}
             />
             <CustomDropdown
               label="Số ca"
               placeHolder="Chọn Số ca"
-              options={['Ca1', 'Ca2', 'Ca3']}
-              value={value2}
-              onClose={handleClose}
+              options={['Ca 1', 'Ca 2', 'Ca 3']}
+              value={soCa}
               onSubmit={val => handleValueSubmit(val, 'Số ca')}
             />
             <CustomDropdown
               label="Công đoạn"
               placeHolder="Chọn Công đoạn"
               options={['Công đoạn 1', 'Công đoạn 2', 'Công đoạn 3']}
-              value={value3}
-              onClose={handleClose}
+              value={congDoan}
               onSubmit={val => handleValueSubmit(val, 'Công đoạn')}
             />
             <CustomDropdown
@@ -135,59 +150,15 @@ const SettingScreen: React.FC<Props> = ({ navigation }) => {
                 'Số máy 1',
                 'Số máy 2',
                 'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
+                'Số máy 4',
+                'Số máy 5',
+                'Số máy 6',
+                'Số máy 7',
+                'Số máy 8',
               ]}
-              value={value4}
-              onClose={handleClose}
+              value={soMay}
               onSubmit={val => handleValueSubmit(val, 'Số máy')}
-            />
+            /> */}
           </View>
           <AppButton
             onPress={() => handleSettingSubmit()}
@@ -218,7 +189,8 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: Spacing.xxlarge,
     justifyContent: 'space-around',
-    // marginVertical: Spacing.medium,
+    marginVertical: Spacing.medium,
+    paddingHorizontal: Spacing.lagre,
   },
 });
 

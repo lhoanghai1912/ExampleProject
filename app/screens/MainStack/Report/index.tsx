@@ -9,6 +9,7 @@ import { dataReport } from './dataReport';
 import { navigate } from '../../../navigation/RootNavigator';
 import { logout } from '../../../redux/reducers/userSlice';
 import { useDispatch } from 'react-redux';
+import { Colors } from '../../../utils/color';
 
 interface Props {
   navigation: any;
@@ -31,17 +32,46 @@ const ReportScreen: React.FC<Props> = ({ navigation }) => {
         onPress={() => navigation.goBack()}
       ></NavBar>
       <View style={AppStyles.body}>
-        <View style={styles.buttonGroup}>
-          {dataReport.map(item => (
-            <AppButton
-              customStyle={[{ marginBottom: Spacing.lagre }]}
-              key={item.id}
-              title={item.title}
-              onPress={() => handleButtonPress(item.screenName)}
-            />
-          ))}
+        <View
+          style={{
+            marginTop: Spacing.medium,
+            flex: 1,
+            width: '100%',
+            borderRadius: 50,
+            flexDirection: 'row', // Create two columns
+            paddingHorizontal: Spacing.small,
+            paddingVertical: Spacing.lagre,
+            backgroundColor: Colors.Gray,
+          }}
+        >
+          <View style={{ flex: 1, paddingHorizontal: Spacing.medium }}>
+            {dataReport.slice(0, dataReport.length / 2).map(item => (
+              <AppButton
+                customStyle={[
+                  {
+                    marginBottom: Spacing.lagre,
+                    paddingHorizontal: Spacing.small,
+                    height: 80,
+                  },
+                ]}
+                key={item.id}
+                title={item.title}
+                onPress={() => handleButtonPress(item.screenName)}
+              />
+            ))}
+          </View>
+
+          <View style={{ flex: 1, paddingHorizontal: Spacing.medium }}>
+            {dataReport.slice(dataReport.length / 2).map(item => (
+              <AppButton
+                customStyle={[{ marginBottom: Spacing.lagre, height: 80 }]}
+                key={item.id}
+                title={item.title}
+                onPress={() => handleButtonPress(item.screenName)}
+              />
+            ))}
+          </View>
         </View>
-        {/* <AppButton title={TITLES.logout} onPress={handleLogout}></AppButton> */}
       </View>
     </View>
   );
@@ -51,6 +81,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    backgroundColor: Colors.primary,
   },
   buttonGroup: {
     justifyContent: 'space-between',

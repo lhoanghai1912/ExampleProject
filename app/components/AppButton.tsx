@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: Colors.white,
-    fontSize: Fonts.xlarge,
+    fontSize: Fonts.normal,
     fontWeight: 500,
     textAlign: 'center',
   },

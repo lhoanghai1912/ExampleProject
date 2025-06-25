@@ -9,6 +9,7 @@ import { logout } from '../../../redux/reducers/userSlice';
 import { useDispatch } from 'react-redux';
 import { navigate } from '../../../navigation/RootNavigator';
 import { dataTransaction } from './dataTransaction';
+import { Colors } from '../../../utils/color';
 interface Props {
   navigation: any;
   route: any;
@@ -30,17 +31,46 @@ const TransactionScreen: React.FC<Props> = ({ navigation }) => {
         onPress={() => navigation.goBack()}
       ></NavBar>
       <View style={AppStyles.body}>
-        <View style={styles.buttonGroup}>
-          {dataTransaction.map(item => (
-            <AppButton
-              customStyle={[{ marginBottom: Spacing.lagre }]}
-              key={item.id}
-              title={item.title}
-              onPress={() => handleButtonPress(item.screenName)}
-            />
-          ))}
+        <View
+          style={{
+            marginTop: Spacing.medium,
+            flex: 1,
+            width: '100%',
+            borderRadius: 50,
+            flexDirection: 'row', // Create two columns
+            paddingHorizontal: Spacing.small,
+            paddingVertical: Spacing.lagre,
+            backgroundColor: Colors.Gray,
+          }}
+        >
+          <View style={{ flex: 1, paddingHorizontal: Spacing.medium }}>
+            {dataTransaction.slice(0, dataTransaction.length / 2).map(item => (
+              <AppButton
+                customStyle={[
+                  {
+                    marginBottom: Spacing.lagre,
+                    paddingHorizontal: Spacing.small,
+                    height: 80,
+                  },
+                ]}
+                key={item.id}
+                title={item.title}
+                onPress={() => handleButtonPress(item.screenName)}
+              />
+            ))}
+          </View>
+
+          <View style={{ flex: 1, paddingHorizontal: Spacing.medium }}>
+            {dataTransaction.slice(dataTransaction.length / 2).map(item => (
+              <AppButton
+                customStyle={[{ marginBottom: Spacing.lagre, height: 80 }]}
+                key={item.id}
+                title={item.title}
+                onPress={() => handleButtonPress(item.screenName)}
+              />
+            ))}
+          </View>
         </View>
-        {/* <AppButton title={TITLES.logout} onPress={handleLogout}></AppButton> */}
       </View>
     </View>
   );
@@ -50,6 +80,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    backgroundColor: Colors.primary,
   },
   buttonGroup: {
     justifyContent: 'space-between',

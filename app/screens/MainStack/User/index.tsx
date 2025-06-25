@@ -8,6 +8,10 @@ import { Spacing } from '../../../utils/spacing';
 import AppButton from '../../../components/AppButton';
 import AppToast from '../../../components/AppToast';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../redux/reducers/userSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Colors } from '../../../utils/color';
 
 interface Props {
   navigation: any;
@@ -21,7 +25,7 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
   const [Center, setCenter] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-
+  const dispatch = useDispatch();
   const handleSummit = () => {
     // Handle submit logic here
     if (!Username || !Password || !Fullname || !Department || !Center) {
@@ -33,15 +37,18 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
       setToastVisible(true);
     }
   };
+  const handleLogout = async () => {
+    dispatch(logout());
+    await AsyncStorage.clear(); // Xóa tất cả dữ liệu trong AsyncStorage
+  };
   return (
     <View style={styles.container}>
-      <NavBar title={TITLES.user} onPress={() => navigation.goBack()} />
+      <View style={{ backgroundColor: Colors.primary }}>
+        <NavBar title={TITLES.user} onPress={() => navigation.goBack()} />
+      </View>
       <KeyboardAwareScrollView scrollEnabled>
         <View style={AppStyles.body}>
           <View style={styles.wrapBody}>
-            {/* <Text
-            style={[AppStyles.title, { marginBottom: Spacing.xlarge }]}
-          >{`Thông tin người dùng`}</Text> */}
             <View>
               <AppInput
                 label="Username"
@@ -83,7 +90,6 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
               ]}
             ></AppButton>
           </View>
-          <View style={AppStyles.footer}></View>
         </View>
       </KeyboardAwareScrollView>
       <AppToast
@@ -99,12 +105,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    backgroundColor: Colors.white,
   },
   wrapBody: {
     flex: 1,
+    marginTop: Spacing.medium,
+    borderRadius: 50,
     paddingVertical: Spacing.xxlarge,
+    paddingHorizontal: Spacing.medium,
     justifyContent: 'space-around',
-    marginHorizontal: Spacing.medium,
+    // marginHorizontal: Spacing.medium,
+    backgroundColor: Colors.Gray,
   },
 });
 

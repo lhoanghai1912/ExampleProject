@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TextInput } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 import AppStyles from '../../components/AppStyle';
 import { IMAGES, TITLES } from '../../utils/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,6 +17,7 @@ import styles from './style';
 import { useDispatch } from 'react-redux';
 import { setToken, setUserData } from '../../redux/reducers/userSlice';
 import NavBar from '../../components/Navbar';
+import { Spacing } from '../../utils/spacing';
 
 interface Props {
   navigation: any;
@@ -17,11 +25,10 @@ interface Props {
 }
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  const [password, setPassword] = useState('sapb1');
   const [username, setUsername] = useState('manager');
+  const [password, setPassword] = useState('sapb1');
   const dispatch = useDispatch();
-  const token1 = '123abc';
-  const data = [username, password];
+  const token1 = '123abc1';
   const handleBack = async () => {
     navigation.goBack();
   };
@@ -30,7 +37,12 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Login Pressed');
     try {
       await AsyncStorage.setItem('accesstoken', token1);
-      dispatch(setUserData({ username: username, password: password }));
+      // console.log('Dispatching user data: ', { userData: data });
+      dispatch(
+        setUserData({
+          userData: { username: username, password: password, token: token1 },
+        }),
+      );
       dispatch(setToken({ token: token1 }));
     } catch (error) {
       console.log('error ', error);
@@ -68,52 +80,43 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     //   return null;
     // }
   };
-  const handleLogin1 = async () => {
-    console.log('Login1 Pressed');
-  };
 
   return (
     <View style={styles.container}>
       {/* <NavBar title="Đăng nhập" onPress={handleBack} /> */}
-      <View style={AppStyles.header}>
-        <Image
-          source={IMAGES.foxAI}
-          style={{
-            flex: 1,
-            width: '100%',
-            height: '100%',
-            justifyContent: 'flex-start',
-          }}
-          resizeMode="contain"
-        ></Image>
-      </View>
-      <View style={[AppStyles.body]}>
-        <View style={styles.wrapLogin}>
-          <View style={styles.bodyItem}>
-            <Text style={AppStyles.title}>{TITLES.login}</Text>
-          </View>
-          <View style={styles.bodyItem}>
-            <AppInput
-              placeholder="Usesname"
-              style={styles.inputText}
-              value={username}
-              onChangeText={setUsername}
-            ></AppInput>
-            <AppInput
-              placeholder="Password"
-              style={styles.inputText}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={true}
-            ></AppInput>
-          </View>
-          <View style={styles.bodyItem}>
-            <AppButton
-              disabled={!(username && password)}
-              title={TITLES.login}
-              onPress={handleLogin}
-            />
-          </View>
+      <Image source={IMAGES.foxAI} style={styles.logo} resizeMode="contain" />
+      <View style={styles.wrapLogin}>
+        <View style={styles.bodyItem}>
+          <Text style={AppStyles.title}>{TITLES.login}</Text>
+        </View>
+        <View style={styles.bodyItem}>
+          <AppInput
+            placeholder="Usesname"
+            style={styles.inputText}
+            value={username}
+            onChangeText={setUsername}
+          ></AppInput>
+          <AppInput
+            placeholder="Password"
+            style={[styles.inputText]}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={true}
+          ></AppInput>
+        </View>
+        <View style={[styles.bodyItem]}>
+          <TouchableOpacity style={{ justifyContent: 'center' }}>
+            <Text style={[styles.text, { marginBottom: Spacing.small }]}>
+              Quên mật khẩu?
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.bodyItem}>
+          <AppButton
+            disabled={!(username && password)}
+            title={TITLES.login}
+            onPress={handleLogin}
+          />
         </View>
       </View>
     </View>

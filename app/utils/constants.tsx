@@ -1,3 +1,5 @@
+import { logout } from '../redux/reducers/userSlice';
+
 export const MESSAGES = {
   loginSuccess: 'Login successful!',
   loginFailed: 'Login failed. Please try again.',
@@ -5,7 +7,7 @@ export const MESSAGES = {
 };
 
 export const TITLES = {
-  login: 'Login',
+  login: 'Đăng nhập',
   home: 'Home',
   profile: 'Profile',
   settings: 'Settings',
@@ -25,8 +27,10 @@ export const ICONS = {
   setting: require('../assets/icons/settings.png'),
   info: require('../assets/icons/user.png'),
   scan: require('../assets/icons/scanner.png'),
+  logout: require('../assets/icons/logout.png'),
 };
 
 export const IMAGES = {
   foxAI: require('../assets/images/company-logo.png'),
+  avtar: require('../assets/images/avt_male.jpg'),
 };

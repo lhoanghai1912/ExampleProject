@@ -19,13 +19,17 @@ import {
   useCameraPermission,
   useCodeScanner,
 } from 'react-native-vision-camera';
+import CustomDropdown from '../../../../../components/DropDown';
+import { navigate } from '../../../../../navigation/RootNavigator';
+import { Screen_Name } from '../../../../../navigation/ScreenName';
+import AppToast from '../../../../../components/AppToast';
 
 interface Props {
   navigation: any;
   route: any;
 }
 const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
-  const [lenhSX, setLenhSX] = useState('');
+  const [soCa, setSoCa] = useState('');
   const [modalCalendarVisible, setModalCalendarVisible] = useState(false);
   const [selectedDate] = useState(moment().format('YYYY-MM-DD'));
   const [docDate, setDocDate] = useState(selectedDate);
@@ -38,9 +42,9 @@ const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     // Lấy dữ liệu từ AsyncStorage khi màn hình được render
     const loadData = async () => {
-      const lenhSXValue = await AsyncStorage.getItem('LenhSX');
+      const soCaValue = await AsyncStorage.getItem('SoCa');
 
-      if (lenhSXValue) setLenhSX(lenhSXValue);
+      if (soCaValue) setSoCa(soCaValue);
     };
 
     loadData();
@@ -49,6 +53,7 @@ const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
     setDocDate(date);
     setModalCalendarVisible(false);
   };
+
   const handleQR = async () => {
     requestPermission();
     if (hasPermission) {
@@ -63,9 +68,40 @@ const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
       console.log(`Scanned ${codes.length} codes!`);
     },
   });
+  const handleValueSubmit = (val: string, dropdownName: string) => {
+    console.log('Selected value:', val);
+    // Cập nhật các state với giá trị đã chọn
+    switch (dropdownName) {
+      case 'Số ca':
+        setSoCa(val);
+        break;
+    }
+  };
+  const handleSubmit = async () => {
+    // Kiểm tra các trường thông tin
+    if (!soCa) {
+      setToastMessage('Vui lòng điền đầy đủ thông tin');
+      setToastVisible(true);
+      return;
+    }
+
+    // Lưu dữ liệu vào AsyncStorage
+    try {
+      await AsyncStorage.setItem('SoCa', soCa);
+      setToastMessage('Dữ liệu đã được lưu thành công');
+      setToastVisible(true);
+      setTimeout(() => {
+        navigation.goBack(); // Navigate back after 1.5 seconds
+      }, 500);
+    } catch (error) {
+      console.error('Error saving data:', error);
+      setToastMessage('Lỗi khi lưu dữ liệu');
+      setToastVisible(true);
+    }
+  };
   return (
     <View style={styles.container}>
-      <NavBar title="Trả lại NVL " onPress={() => navigation.goBack()} />
+      <NavBar title="Trả lại NVL " navigation={navigation} />
       <KeyboardAwareScrollView
         style={AppStyles.scrollView}
         scrollEnabled
@@ -122,11 +158,13 @@ const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
               >
                 <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
                   <AppInput label="Số phiếu" editable={false}></AppInput>
-                  <AppInput
-                    label="Lệnh sản xuất"
-                    editable={false}
-                    value={lenhSX}
-                  ></AppInput>
+                  <CustomDropdown
+                    label="Số ca"
+                    placeHolder="Chọn Số ca"
+                    options={['Ca1', 'Ca2', 'Ca3']}
+                    value={soCa}
+                    onSubmit={val => handleValueSubmit(val, 'Số ca')}
+                  />
                 </View>
                 <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
                   <TouchableOpacity
@@ -179,7 +217,7 @@ const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
           </View>
           <AppButton
             title={TITLES.accept}
-            onPress={() => console.log('Accepted')}
+            onPress={() => handleSubmit()}
             customStyle={[{ marginHorizontal: Spacing.xxxlarge }]}
           ></AppButton>
         </View>
@@ -234,6 +272,12 @@ const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
         selectedDate={docDate}
         onDateSelect={handleDateSelect}
         onClose={() => setModalCalendarVisible(!modalCalendarVisible)}
+      />
+      <AppToast
+        message={toastMessage}
+        visible={toastVisible}
+        duration={3000}
+        onHide={() => setToastVisible(false)}
       />
     </View>
   );

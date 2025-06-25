@@ -21,7 +21,6 @@ interface Props {
   placeHolder: string;
   options: string[];
   value: string;
-  onClose: () => void;
   onSubmit: (val: string) => void;
 }
 
@@ -30,26 +29,23 @@ const CustomDropdown: React.FC<Props> = ({
   placeHolder,
   options,
   value,
-  onClose,
   onSubmit,
 }) => {
   const [visible, setVisible] = useState(false);
   const [selectedValue, setSelectedValue] = useState(value);
 
-  useEffect(() => {
-    setSelectedValue(value);
-  }, [value]);
+  // useEffect(() => {
+  //   setSelectedValue(value);
+  //   setVisible(false); // Close the modal when value changes
+  // }, [value]);
 
   const handleSubmit = () => {
     onSubmit(selectedValue);
-    onClose();
-    setVisible(false);
   };
 
   const handleCancel = () => {
     setSelectedValue(value); // Reset to initial value
-    onClose();
-    setVisible(false);
+    setVisible(false); // Close the modal
   };
 
   const renderItem = ({ item }: any) => {
@@ -79,18 +75,16 @@ const CustomDropdown: React.FC<Props> = ({
           value={value}
           editable={false}
         />
+        {/* <Text>{value}</Text> */}
       </TouchableOpacity>
 
       <Modal
         visible={visible}
         transparent
         animationType="slide"
-        onRequestClose={onClose}
+        onRequestClose={handleCancel}
       >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          onPress={() => setVisible(false)}
-        >
+        <TouchableOpacity style={styles.modalOverlay}>
           <View style={styles.dropdown}>
             <FlatList
               data={options}
@@ -120,8 +114,8 @@ export default CustomDropdown;
 
 const styles = StyleSheet.create({
   inputWrap: {
-    marginBottom: Spacing.medium,
-    marginHorizontal: Spacing.medium,
+    // marginBottom: Spacing.medium,
+    // marginHorizontal: Spacing.medium,
   },
   textLable: {
     fontSize: Fonts.xlarge,

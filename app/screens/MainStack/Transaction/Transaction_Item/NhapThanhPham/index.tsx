@@ -10,10 +10,11 @@ import AppButton from '../../../../../components/AppButton';
 import { ICONS, TITLES } from '../../../../../utils/constants';
 import { Colors } from '../../../../../utils/color';
 import { Fonts } from '../../../../../utils/fontSize';
-import moment from 'moment';
+import moment, { duration } from 'moment';
 import CalendarModal from '../../../../../components/Modal/DateTime';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppToast from '../../../../../components/AppToast';
+import CustomDropdown from '../../../../../components/DropDown';
 interface Props {
   navigation: any;
   route: any;
@@ -41,10 +42,40 @@ const NhapThanhPhamScreen: React.FC<Props> = ({ navigation }) => {
     setDocDate(date);
     setModalCalendarVisible(false);
   };
+  const handleValueSubmit = (val: string, dropdownName: string) => {
+    console.log('Selected value:', val);
+    // Cập nhật các state với giá trị đã chọn
+    switch (dropdownName) {
+      case 'Lệnh sản xuất':
+        setLenhSX(val);
+        break;
+    }
+  };
+  const handleSubmit = async () => {
+    // Kiểm tra các trường thông tin
+    if (!lenhSX) {
+      setToastMessage('Vui lòng điền đầy đủ thông tin');
+      setToastVisible(true);
+      return;
+    }
 
+    // Lưu dữ liệu vào AsyncStorage
+    try {
+      await AsyncStorage.setItem('LenhSX', lenhSX);
+      setToastMessage('Dữ liệu đã được lưu thành công');
+      setToastVisible(true);
+      setTimeout(() => {
+        navigation.goBack(); // Navigate back after 1.5 seconds
+      }, 500);
+    } catch (error) {
+      console.error('Error saving data:', error);
+      setToastMessage('Lỗi khi lưu dữ liệu');
+      setToastVisible(true);
+    }
+  };
   return (
     <View style={styles.container}>
-      <NavBar title="Nhập Thành Phẩm" onPress={() => navigation.goBack()} />
+      <NavBar title="Nhập Thành Phẩm" navigation={navigation} />
       <KeyboardAwareScrollView
         style={AppStyles.scrollView}
         scrollEnabled
@@ -80,11 +111,13 @@ const NhapThanhPhamScreen: React.FC<Props> = ({ navigation }) => {
               >
                 <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
                   <AppInput label="Số phiếu" editable={false}></AppInput>
-                  <AppInput
+                  <CustomDropdown
                     label="Lệnh sản xuất"
+                    placeHolder="Chọn Lệnh sản xuất"
+                    options={['CT1', 'CT2', 'CT3']}
                     value={lenhSX}
-                    editable={false}
-                  ></AppInput>
+                    onSubmit={val => handleValueSubmit(val, 'Lệnh sản xuất')}
+                  />
                 </View>
                 <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
                   <TouchableOpacity
@@ -138,7 +171,7 @@ const NhapThanhPhamScreen: React.FC<Props> = ({ navigation }) => {
           </View>
           <AppButton
             title={TITLES.accept}
-            onPress={() => console.log('Accepted')}
+            onPress={() => handleSubmit()}
             customStyle={[{ marginHorizontal: Spacing.xxxlarge }]}
           ></AppButton>
         </View>

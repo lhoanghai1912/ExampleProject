@@ -1,6 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Screen_Name } from './ScreenName';
-import { BottomTabNavigator } from './BottomTabNavigator';
 import HomeScreen from '../screens/MainStack';
 import MenuScreen from '../screens/MainStack/Menu';
 import TransactionScreen from '../screens/MainStack/Transaction';
@@ -38,12 +37,8 @@ const HomeNavigator = () => {
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, animation: 'slide_from_right' }}
-      initialRouteName={Screen_Name.Bottom_Navigator}
+      initialRouteName={Screen_Name.Home_Screen}
     >
-      <Stack.Screen
-        name={Screen_Name.Bottom_Navigator}
-        component={BottomTabNavigator}
-      />
       <Stack.Screen name={Screen_Name.Home_Screen} component={HomeScreen} />
       <Stack.Screen name={Screen_Name.Menu_Screen} component={MenuScreen} />
       <Stack.Screen

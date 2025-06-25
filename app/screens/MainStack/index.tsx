@@ -1,58 +1,144 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import React, { use } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import NavBar from '../../components/Navbar';
-import { TITLES } from '../../utils/constants';
+import { ICONS, IMAGES, TITLES } from '../../utils/constants';
 import AppStyles from '../../components/AppStyle';
 import AppButton from '../../components/AppButton';
-import { useDispatch } from 'react-redux';
-import { logout } from '../../redux/reducers/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout, setUserData } from '../../redux/reducers/userSlice';
 import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
 import { Spacing } from '../../utils/spacing';
 import { dataOption } from './dataOption';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-const HomeScreen = () => {
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Fonts } from '../../utils/fontSize';
+import styles from './style';
+import { Colors } from '../../utils/color';
+const HomeScreen: React.FC = () => {
   const dispatch = useDispatch();
+  const { userData } = useSelector((state: any) => state.user);
   const handleLogout = async () => {
     dispatch(logout());
+    await AsyncStorage.clear();
   };
+
   const handleButtonPress = (screenName: string) => {
     navigate(screenName);
   };
 
   return (
     <View style={styles.container}>
-      <NavBar title={TITLES.home} style={AppStyles.header}></NavBar>
-      <KeyboardAwareScrollView scrollEnabled>
-        <View style={AppStyles.body}>
-          <View style={styles.buttonGroup}>
-            {dataOption.map(item => (
-              <AppButton
-                customStyle={[{ marginBottom: Spacing.lagre }]}
-                key={item.id}
-                title={item.title}
-                onPress={() => handleButtonPress(item.screenName)}
+      {/* <KeyboardAwareScrollView scrollEnabled style={{ flex: 1 }}> */}
+      <View
+        style={{
+          paddingBottom: Spacing.xlarge,
+        }}
+      >
+        <View
+          style={[
+            styles.header,
+            {
+              marginHorizontal: Spacing.medium,
+              borderEndEndRadius: 500,
+            },
+          ]}
+        >
+          <View>
+            <TouchableOpacity
+              onPress={() => {
+                navigate(Screen_Name.UserInfo_Screen);
+              }}
+            >
+              <Image
+                source={IMAGES.avtar}
+                style={{
+                  width: 100,
+                  height: 100,
+                  alignSelf: 'flex-start',
+                  borderRadius: 500,
+                }}
               />
-            ))}
+            </TouchableOpacity>
+          </View>
+          <View style={{ flex: 1, paddingLeft: Spacing.medium }}>
+            <Text style={AppStyles.text}>Welcome Back!</Text>
+            <Text style={[AppStyles.text, { fontSize: Fonts.large }]}>
+              {userData.username || ''}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              width: 100,
+              justifyContent: 'space-between',
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => navigate(Screen_Name.Setting_Screen)}
+            >
+              <Image
+                source={ICONS.setting}
+                style={[AppStyles.icon, { width: 35, height: 35 }]}
+              ></Image>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => dispatch(logout())}>
+              <Image
+                source={ICONS.logout}
+                style={[AppStyles.icon, { width: 35, height: 35 }]}
+              ></Image>
+            </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAwareScrollView>
+      </View>
 
-      <AppButton title={TITLES.logout} onPress={handleLogout}></AppButton>
+      <View
+        style={{
+          flex: 1,
+          width: '100%',
+          borderRadius: 50,
+          flexDirection: 'row', // Create two columns
+          paddingHorizontal: Spacing.medium,
+          paddingVertical: Spacing.lagre,
+          backgroundColor: Colors.Gray,
+        }}
+      >
+        <View style={{ flex: 1, paddingHorizontal: Spacing.medium }}>
+          {dataOption.slice(0, dataOption.length / 2).map(item => (
+            <AppButton
+              customStyle={[
+                {
+                  marginBottom: Spacing.lagre,
+                },
+              ]}
+              key={item.id}
+              title={item.title}
+              onPress={() => handleButtonPress(item.screenName)}
+            />
+          ))}
+        </View>
+
+        <View style={{ flex: 1, paddingHorizontal: Spacing.medium }}>
+          {dataOption.slice(dataOption.length / 2).map(item => (
+            <AppButton
+              customStyle={[{ marginBottom: Spacing.lagre }]}
+              key={item.id}
+              title={item.title}
+              onPress={() => handleButtonPress(item.screenName)}
+            />
+          ))}
+        </View>
+      </View>
+      {/* </KeyboardAwareScrollView> */}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  buttonGroup: {
-    justifyContent: 'space-between',
-    marginTop: Spacing.xxlarge,
-    marginHorizontal: Spacing.medium,
-  },
-});
 
 export default HomeScreen;

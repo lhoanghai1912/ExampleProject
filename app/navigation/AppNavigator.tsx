@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const AppNavigator = () => {
   const [showSplash, setShowSplash] = useState(true);
   const { token } = useSelector((state: any) => state.user);
+  console.log(token, 'token in AppNavigator');
 
   useEffect(() => {
     // delay splash 1.5s để hiển thị logo
