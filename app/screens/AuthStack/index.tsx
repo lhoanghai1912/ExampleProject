@@ -40,7 +40,12 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       // console.log('Dispatching user data: ', { userData: data });
       dispatch(
         setUserData({
-          userData: { username: username, password: password, token: token1 },
+          userData: {
+            username: username,
+            password: password,
+            token: token1,
+            fullname: 'User Test',
+          },
         }),
       );
       dispatch(setToken({ token: token1 }));

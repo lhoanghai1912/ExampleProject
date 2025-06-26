@@ -156,27 +156,6 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
                 marginHorizontal: Spacing.medium,
               }}
             >
-              <TouchableOpacity
-                onPress={() => handleQR()}
-                style={{
-                  backgroundColor: Colors.Gray,
-                  padding: 5,
-                  width: 50,
-                  height: 50,
-                  borderRadius: 500,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'absolute',
-                  top: Spacing.small,
-                  right: Spacing.small,
-                  zIndex: 1,
-                }}
-              >
-                <Image
-                  source={ICONS.scan}
-                  style={[AppStyles.icon, { borderRadius: 500 }]}
-                />
-              </TouchableOpacity>
               <View
                 style={{
                   borderColor: Colors.Gray,
@@ -187,9 +166,40 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
                   paddingHorizontal: Spacing.small,
                 }}
               >
-                <Text style={[AppStyles.text, { fontSize: Fonts.large }]}>
-                  Thông tin Phiếu
-                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    paddingHorizontal: Spacing.small,
+                  }}
+                >
+                  <Text
+                    style={[
+                      AppStyles.text,
+                      { fontSize: Fonts.large, verticalAlign: 'middle' },
+                    ]}
+                  >
+                    Thông tin Phiếu
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => handleQR()}
+                    style={{
+                      backgroundColor: Colors.Gray,
+                      padding: 5,
+                      width: 50,
+                      height: 50,
+                      borderRadius: 500,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Image
+                      source={ICONS.scan}
+                      style={[AppStyles.icon, { borderRadius: 500 }]}
+                    />
+                  </TouchableOpacity>
+                </View>
+
                 <View
                   style={{
                     flexDirection: 'row',
@@ -198,15 +208,27 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
                   }}
                 >
                   <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
-                    <AppInput label="Số phiếu" editable={false}></AppInput>
-                    <AppInput label="Số lô" editable={false}></AppInput>
-                    <CustomDropdown
+                    <View>
+                      <Text style={AppStyles.label}>Số phiếu</Text>
+                      <Text style={AppStyles.disable}>{'Số phiếu'}</Text>
+                    </View>
+                    <View>
+                      <Text style={AppStyles.label}>Số lô</Text>
+                      <Text style={AppStyles.disable}>{'Số lô'}</Text>
+                    </View>
+                    {/* <CustomDropdown
                       label="Lệnh sản xuất"
                       placeHolder="Chọn Lệnh sản xuất"
                       options={['CT1', 'CT2', 'CT3']}
                       value={lenhSX}
                       onSubmit={val => handleValueSubmit(val, 'Lệnh sản xuất')}
-                    />
+                    /> */}
+                    <View>
+                      <Text style={AppStyles.label}>Lệnh sản xuất</Text>
+                      <TouchableOpacity>
+                        <Text style={AppStyles.input}>{lenhSX}</Text>
+                      </TouchableOpacity>
+                    </View>
                     <CustomDropdown
                       label="Số máy"
                       placeHolder="Chọn Số máy"
@@ -225,18 +247,23 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
                     />
                   </View>
                   <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setModalCalendarVisible(true);
-                      }}
-                    >
-                      <AppInput
-                        editable={false}
-                        value={docDate}
-                        label="Ngày xuất kho"
-                      ></AppInput>
-                    </TouchableOpacity>
-                    <AppInput label="Kho xuất" editable={false}></AppInput>
+                    <View>
+                      <Text style={AppStyles.label}>Kho xuất</Text>
+                      <Text style={AppStyles.disable}>{'Kho xuất'}</Text>
+                    </View>
+                    <View>
+                      <Text style={AppStyles.label}>Ngày xuất Kho</Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setModalCalendarVisible(true);
+                        }}
+                      >
+                        <Text style={AppStyles.input}>
+                          {moment(docDate).format('DD/MM/YYYY')}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+
                     <CustomDropdown
                       label="Số ca"
                       placeHolder="Chọn Số ca"
@@ -258,7 +285,6 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
                 style={{
                   borderColor: Colors.Gray,
                   borderWidth: 1,
-                  marginBottom: Spacing.medium,
                   borderRadius: 10,
                   paddingVertical: Spacing.small,
                   paddingHorizontal: Spacing.small,
@@ -275,8 +301,14 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
                   }}
                 >
                   <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
-                    <AppInput label="Mã TP/BTP" editable={false}></AppInput>
-                    <AppInput label="Tên NVL" editable={false}></AppInput>
+                    <View>
+                      <Text style={AppStyles.label}>Mã NVL</Text>
+                      <Text style={AppStyles.disable}>{'Mã NVL'}</Text>
+                    </View>
+                    <View>
+                      <Text style={AppStyles.label}>Tên NVL</Text>
+                      <Text style={AppStyles.disable}>{'Tên NVL'}</Text>
+                    </View>
                   </View>
                   <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
                     <AppInput label="SL thực xuất"></AppInput>

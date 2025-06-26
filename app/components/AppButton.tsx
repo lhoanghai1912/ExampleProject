@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     paddingVertical: Spacing.small,
+    paddingHorizontal: Spacing.medium,
   },
   buttonDisabled: {
     color: Colors.black,
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: Colors.white,
-    fontSize: Fonts.normal,
+    fontSize: Fonts.small,
     fontWeight: 500,
     textAlign: 'center',
   },

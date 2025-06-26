@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Touchable,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import NavBar from '../../../components/Navbar';
-import { TITLES } from '../../../utils/constants';
+import { ICONS, IMAGES, TITLES } from '../../../utils/constants';
 import AppStyles from '../../../components/AppStyle';
 import AppInput from '../../../components/AppInput';
 import { Spacing } from '../../../utils/spacing';
 import AppButton from '../../../components/AppButton';
 import AppToast from '../../../components/AppToast';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../redux/reducers/userSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../../../utils/color';
+import { Fonts } from '../../../utils/fontSize';
+import ModalComponent from '../../../components/Modal/UserInfo';
+import UserInfoModal from '../../../components/Modal/UserInfo';
+import PasswordModal from '../../../components/Modal/Password';
 
 interface Props {
   navigation: any;
@@ -25,78 +36,121 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
   const [Center, setCenter] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [showModal, setShowModal] = useState(false);
   const dispatch = useDispatch();
-  const handleSummit = () => {
-    // Handle submit logic here
-    if (!Username || !Password || !Fullname || !Department || !Center) {
-      setToastMessage('Vui lòng điền đầy đủ thông tin');
-      setToastVisible(true);
-      return;
-    } else {
-      setToastMessage('Thông tin đã được cập nhật thành công');
-      setToastVisible(true);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [selectedUserData, setSelectedUserData] = useState<string | null>(null);
+
+  const [type, setType] = useState<number | null>(null);
+
+  const { userData } = useSelector((state: any) => state.user);
+  useEffect(() => {
+    const loadData = async () => {
+      setUsername(userData.username), console.log('name1', Username);
+      setFullname(userData.fullname), console.log('name1', Username);
+      console.log(userData);
+    };
+    loadData();
+  }, []);
+  const handlePressModal = (type: number) => {
+    setType(type);
+    setShowModal(true);
+  };
+  const handleModalClose = (data: string | null) => {
+    setShowModal(false);
+    if (data) {
+      if (type === 1) {
+        setDepartment(data);
+      } else if (type === 2) {
+        setCenter(data);
+      }
     }
   };
-  const handleLogout = async () => {
-    dispatch(logout());
-    await AsyncStorage.clear(); // Xóa tất cả dữ liệu trong AsyncStorage
+  const handleSummit = () => {
+    setToastMessage('Thông tin đã được cập nhật thành công');
+    setToastVisible(true);
   };
+
   return (
     <View style={styles.container}>
       <View style={{ backgroundColor: Colors.primary }}>
         <NavBar title={TITLES.user} onPress={() => navigation.goBack()} />
       </View>
-      <KeyboardAwareScrollView scrollEnabled>
-        <View style={AppStyles.body}>
-          <View style={styles.wrapBody}>
+      <View style={[AppStyles.body]}>
+        <View style={styles.wrapBody}>
+          <TouchableOpacity>
+            <Image
+              source={IMAGES.avtar}
+              style={[
+                AppStyles.avartar,
+                { alignSelf: 'center', width: 200, height: 200 },
+              ]}
+            />
+          </TouchableOpacity>
+          <View>
+            <AppInput
+              editable={false}
+              label="Username"
+              placeholder="Username"
+              value={Username}
+              style={{ opacity: 0.5 }}
+              onChangeText={setUsername}
+            />
+
+            <AppInput
+              label="Fullname"
+              placeholder="Fullname"
+              value={Fullname}
+              onChangeText={setFullname}
+            />
             <View>
-              <AppInput
-                label="Username"
-                placeholder="Username"
-                value={Username}
-                onChangeText={setUsername}
-              />
-              <AppInput
-                label="Password"
-                placeholder="Password"
-                value={Password}
-                onChangeText={setPassword}
-                secureTextEntry={true}
-              />
-              <AppInput
-                label="Fullname"
-                placeholder="Fullname"
-                value={Fullname}
-                onChangeText={setFullname}
-              />
-              <AppInput
-                label="Department"
-                placeholder="Department"
-                value={Department}
-                onChangeText={setDepartment}
-              />
-              <AppInput
-                label="Center"
-                placeholder="Center"
-                value={Center}
-                onChangeText={setCenter}
-              />
+              <Text style={AppStyles.label}>Department</Text>
+              <TouchableOpacity onPress={() => handlePressModal(1)}>
+                <Text style={AppStyles.input}>
+                  {Department || 'Department'}{' '}
+                </Text>
+              </TouchableOpacity>
             </View>
+
+            <View>
+              <Text style={AppStyles.label}>Center</Text>
+              <TouchableOpacity onPress={() => handlePressModal(2)}>
+                <Text style={AppStyles.input}>{Center || 'Center'} </Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity onPress={() => setShowPasswordModal(true)}>
+              <Text style={styles.changePassword}> Đổi mật khẩu</Text>
+            </TouchableOpacity>
+
             <AppButton
               onPress={() => handleSummit()}
               title={TITLES.accept}
               customStyle={[
-                { marginTop: Spacing.xlarge, marginHorizontal: Spacing.medium },
+                {
+                  marginHorizontal: Spacing.medium,
+                  marginVertical: Spacing.small,
+                },
               ]}
-            ></AppButton>
+            />
           </View>
         </View>
-      </KeyboardAwareScrollView>
+      </View>
+      <UserInfoModal
+        type={type!}
+        visible={showModal}
+        onClose={handleModalClose}
+      />
       <AppToast
         message={toastMessage}
         visible={toastVisible}
         duration={3000}
         onHide={() => setToastVisible(false)}
+      />
+      <PasswordModal
+        visible={showPasswordModal}
+        onClose={() => {
+          setShowPasswordModal(false);
+        }}
       />
     </View>
   );
@@ -105,17 +159,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.primary,
   },
   wrapBody: {
-    flex: 1,
-    marginTop: Spacing.medium,
+    // flex: 1,
     borderRadius: 50,
-    paddingVertical: Spacing.xxlarge,
+    marginTop: Spacing.lagre,
+    paddingVertical: Spacing.lagre,
     paddingHorizontal: Spacing.medium,
     justifyContent: 'space-around',
     // marginHorizontal: Spacing.medium,
     backgroundColor: Colors.Gray,
+  },
+
+  changePassword: {
+    color: 'blue',
+    textAlign: 'right',
+    fontSize: Fonts.normal,
+    paddingHorizontal: Spacing.medium,
+    marginBottom: Spacing.small,
   },
 });
 

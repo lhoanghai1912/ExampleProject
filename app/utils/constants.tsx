@@ -28,6 +28,7 @@ export const ICONS = {
   info: require('../assets/icons/user.png'),
   scan: require('../assets/icons/scanner.png'),
   logout: require('../assets/icons/logout.png'),
+  edit: require('../assets/icons/edit.png'),
 };
 
 export const IMAGES = {

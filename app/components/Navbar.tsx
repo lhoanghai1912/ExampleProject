@@ -12,8 +12,8 @@ const NavBar = ({ title, onPress }: any) => {
       <TouchableOpacity onPress={onPress}>
         <Image source={ICONS.back} style={[AppStyles.icon]}></Image>
       </TouchableOpacity>
-      <Text style={styles.navTitle}>{title}</Text>;
-      <TouchableOpacity style={{ width: 40, height: 40 }}></TouchableOpacity>
+      <Text style={styles.navTitle}>{title}</Text>
+      <TouchableOpacity style={{ width: 30, height: 30 }}></TouchableOpacity>
     </View>
   );
 };

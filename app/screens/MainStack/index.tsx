@@ -59,12 +59,12 @@ const HomeScreen: React.FC = () => {
             >
               <Image
                 source={IMAGES.avtar}
-                style={{
-                  width: 100,
-                  height: 100,
-                  alignSelf: 'flex-start',
-                  borderRadius: 500,
-                }}
+                style={[
+                  AppStyles.avartar,
+                  {
+                    alignSelf: 'flex-start',
+                  },
+                ]}
               />
             </TouchableOpacity>
           </View>
@@ -89,7 +89,7 @@ const HomeScreen: React.FC = () => {
                 style={[AppStyles.icon, { width: 35, height: 35 }]}
               ></Image>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => dispatch(logout())}>
+            <TouchableOpacity onPress={() => handleLogout()}>
               <Image
                 source={ICONS.logout}
                 style={[AppStyles.icon, { width: 35, height: 35 }]}

@@ -30,7 +30,7 @@ const AppInput: React.FC<AppInputProps> = ({
   style,
   label,
   error,
-  editable,
+  editable = true,
   ...props
 }) => {
   const [isShow, setIsShow] = useState(false);
@@ -43,45 +43,59 @@ const AppInput: React.FC<AppInputProps> = ({
   return (
     <View style={styles.wrapper}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <TextInput
-        editable={editable}
-        placeholder={placeholder}
-        value={value}
-        onChangeText={onChangeText}
-        secureTextEntry={secureTextEntry && !isShow}
-        keyboardType={keyboardType}
-        style={[styles.input, style, error && styles.errorBorder]}
-        placeholderTextColor="#999"
-        {...props}
-      />
-      {editable &&
-        (secureTextEntry ? (
-          <View style={AppStyles.iconGroup}>
-            <TouchableOpacity onPress={handleShowHide}>
-              <Image
-                source={isShow ? ICONS.show : ICONS.hide}
-                style={[AppStyles.icon, { display: value ? 'flex' : 'none' }]}
-              ></Image>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleClear}>
-              <Image
-                source={ICONS.clear}
-                style={[AppStyles.icon, { display: value ? 'flex' : 'none' }]}
-              ></Image>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={AppStyles.iconGroup}>
-            <TouchableOpacity onPress={handleClear}>
-              <Image
-                source={ICONS.clear}
-                style={[AppStyles.icon, { display: value ? 'flex' : 'none' }]}
-              ></Image>
-            </TouchableOpacity>
-          </View>
-        ))}
+      <View>
+        <TextInput
+          editable={editable}
+          placeholder={placeholder}
+          value={value}
+          onChangeText={onChangeText}
+          secureTextEntry={secureTextEntry && !isShow}
+          keyboardType={keyboardType}
+          style={[styles.input, style, error && styles.errorBorder]}
+          placeholderTextColor="#999"
+          {...props}
+        />
+        {editable && (
+          <>
+            {secureTextEntry ? (
+              <View style={AppStyles.iconGroup}>
+                <TouchableOpacity onPress={handleShowHide}>
+                  <Image
+                    source={isShow ? ICONS.show : ICONS.hide}
+                    style={[
+                      AppStyles.icon,
+                      { display: value ? 'flex' : 'none' },
+                    ]}
+                  ></Image>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleClear}>
+                  <Image
+                    source={ICONS.clear}
+                    style={[
+                      AppStyles.icon,
+                      { display: value ? 'flex' : 'none' },
+                    ]}
+                  ></Image>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={AppStyles.iconSingle}>
+                <TouchableOpacity onPress={handleClear}>
+                  <Image
+                    source={ICONS.clear}
+                    style={[
+                      AppStyles.icon,
+                      { display: value ? 'flex' : 'none' },
+                    ]}
+                  ></Image>
+                </TouchableOpacity>
+              </View>
+            )}
+          </>
+        )}
 
-      {error && <Text style={styles.errorText}>{error}</Text>}
+        {error && <Text style={styles.errorText}>{error}</Text>}
+      </View>
     </View>
   );
 };
@@ -109,6 +123,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 6,
     elevation: 2,
+    opacity: 1,
   },
   errorBorder: {
     borderColor: '#ff5a5f',
