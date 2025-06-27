@@ -14,13 +14,9 @@ import AppInput from '../../../components/AppInput';
 import { Spacing } from '../../../utils/spacing';
 import AppButton from '../../../components/AppButton';
 import AppToast from '../../../components/AppToast';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../../../redux/reducers/userSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../../../utils/color';
 import { Fonts } from '../../../utils/fontSize';
-import ModalComponent from '../../../components/Modal/UserInfo';
 import UserInfoModal from '../../../components/Modal/UserInfo';
 import PasswordModal from '../../../components/Modal/Password';
 
@@ -37,11 +33,10 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const dispatch = useDispatch();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [selectedUserData, setSelectedUserData] = useState<string | null>(null);
+  const [selectedValue, setSelectedValue] = useState<string>('');
 
-  const [type, setType] = useState<number | null>(null);
+  const [type, setType] = useState('');
 
   const { userData } = useSelector((state: any) => state.user);
   useEffect(() => {
@@ -52,18 +47,16 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
     };
     loadData();
   }, []);
-  const handlePressModal = (type: number) => {
+  const handlePressModal = (type: string) => {
     setType(type);
     setShowModal(true);
   };
   const handleModalClose = (data: string | null) => {
     setShowModal(false);
-    if (data) {
-      if (type === 1) {
-        setDepartment(data);
-      } else if (type === 2) {
-        setCenter(data);
-      }
+    if (type === 'department') {
+      setDepartment(data || '');
+    } else if (type === 'center') {
+      setCenter(data || '');
     }
   };
   const handleSummit = () => {
@@ -105,16 +98,16 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
             />
             <View>
               <Text style={AppStyles.label}>Department</Text>
-              <TouchableOpacity onPress={() => handlePressModal(1)}>
+              <TouchableOpacity onPress={() => handlePressModal('department')}>
                 <Text style={AppStyles.input}>
-                  {Department || 'Department'}{' '}
+                  {Department || 'Department'}
                 </Text>
               </TouchableOpacity>
             </View>
 
             <View>
               <Text style={AppStyles.label}>Center</Text>
-              <TouchableOpacity onPress={() => handlePressModal(2)}>
+              <TouchableOpacity onPress={() => handlePressModal('center')}>
                 <Text style={AppStyles.input}>{Center || 'Center'} </Text>
               </TouchableOpacity>
             </View>
@@ -136,7 +129,7 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
         </View>
       </View>
       <UserInfoModal
-        type={type!}
+        type={type}
         visible={showModal}
         onClose={handleModalClose}
       />

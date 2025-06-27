@@ -1,467 +1,215 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import NavBar from '../../../components/Navbar';
 import { TITLES } from '../../../utils/constants';
 import AppStyles from '../../../components/AppStyle';
 import { Spacing } from '../../../utils/spacing';
-import CustomDropdown from '../../../components/DropDown';
 import AppButton from '../../../components/AppButton';
-import { HttpClient } from '../../../services';
-import { getDanhSachMayMoc } from '../../../services/machine';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { navigate } from '../../../navigation/RootNavigator';
-import { Screen_Name } from '../../../navigation/ScreenName';
 import AppToast from '../../../components/AppToast';
-import { useDispatch } from 'react-redux';
-import { logout } from '../../../redux/reducers/userSlice';
 import { Colors } from '../../../utils/color';
+import UserInfoModal from '../../../components/Modal/UserInfo';
+import { Fonts } from '../../../utils/fontSize';
+import Toast from 'react-native-toast-message';
+import { TextInput } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Props {
   navigation: any;
   route: any;
 }
 const SettingScreen: React.FC<Props> = ({ navigation }) => {
-  const [lenhSX, setLenhSX] = useState('');
-  const [soCa, setSoCa] = useState('');
-  const [congDoan, setCongDoan] = useState('');
-  const [soMay, setSoMay] = useState('');
-  const [data, setData] = useState<any[]>([]);
-  const [error, setError] = useState('');
+  // const [lenhSX, setLenhSX] = useState('');
+  // const [soCa, setSoCa] = useState('');
+  // const [congDoan, setCongDoan] = useState('');
+  // const [soMay, setSoMay] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const dispatch = useDispatch();
-  const [selectedValues, setSelectedValues] = useState('');
-  const [showSelects, setShowSelect] = useState(false);
+  const [type, setType] = useState('');
+  const [showModal, setShowModal] = useState(false);
   const [selectedField, setSelectedField] = useState('');
-
-  // const getMachines = async () => {
-  //   try {
-  //     // Gọi API Login để lấy session
-  //     const loginRes = await HttpClient.post('/Login', {
-  //       CompanyDB: 'DEMO - 2',
-  //       UserName: 'manager',
-  //       Password: 'sapb1',
-  //     });
-
-  //     const sessionId = loginRes.SessionId;
-  //     const routeId = loginRes.RouteId;
-
-  //     // Gọi API lấy danh sách máy móc
-  //     const res = await getDanhSachMayMoc(
-  //       // 'B1SESSION=b9457d16-4ffe-11f0-8000-00505698cb93',
-  //       // '.node5',
-  //       sessionId,
-  //       routeId,
-  //     );
-  //     setData(res.value || []);
-  //   } catch (err) {
-  //     console.error('❌ Không thể load máy móc:', err);
-  //   }
-  // };
-  // useEffect(() => {
-  //   getMachines();
-  // }, []);
+  const [submitted, setSubmitted] = useState(false);
+  const [fields, setFields] = useState<{ [key: string]: string }>({
+    lenhSX: '',
+    soCa: '',
+    congDoan: '',
+    soMay: '',
+  });
+  // Load dữ liệu từ AsyncStorage khi màn hình được load
   useEffect(() => {
-    // Lấy dữ liệu từ AsyncStorage khi màn hình được render
     const loadData = async () => {
-      const lenhSXValue = await AsyncStorage.getItem('LenhSX');
-      const soCaValue = await AsyncStorage.getItem('SoCa');
-      const congDoanValue = await AsyncStorage.getItem('CongDoan');
-      const soMayValue = await AsyncStorage.getItem('SoMay');
-
-      if (lenhSXValue) setLenhSX(lenhSXValue);
-      if (soCaValue) setSoCa(soCaValue);
-      if (congDoanValue) setCongDoan(congDoanValue);
-      if (soMayValue) setSoMay(soMayValue);
+      const lenhSX = await AsyncStorage.getItem('LenhSX');
+      const soCa = await AsyncStorage.getItem('SoCa');
+      const congDoan = await AsyncStorage.getItem('CongDoan');
+      const soMay = await AsyncStorage.getItem('SoMay');
+      setFields({
+        lenhSX: lenhSX || '',
+        soCa: soCa || '',
+        congDoan: congDoan || '',
+        soMay: soMay || '',
+      });
     };
-
     loadData();
   }, []);
-  const handleValueSelect = (value: string) => {
-    setSelectedValues(value);
-    setShowSelect(false); // Đóng modal sau khi chọn giá trị
+
+  const handlePressModal = (type: string) => {
+    setType(type);
+    setShowModal(true);
   };
-  const handleValueSubmit = (val: string, dropdownName: string) => {
-    console.log('Selected value:', val);
-    // Cập nhật các state với giá trị đã chọn
-    switch (dropdownName) {
-      case 'Lệnh sản xuất':
-        setLenhSX(val);
-        break;
-      case 'Số ca':
-        setSoCa(val);
-        break;
-      case 'Công đoạn':
-        setCongDoan(val);
-        break;
-      case 'Số máy':
-        setSoMay(val);
-        break;
+  const [inputStyles, setInputStyles] = useState<{ [key: string]: object }>({
+    lenhSX: {},
+    soCa: {},
+    congDoan: {},
+    soMay: {},
+  });
+
+  const handleModalClose = (data: string | null) => {
+    setShowModal(false);
+    if (data) {
+      setFields(prev => ({ ...prev, [selectedField]: data }));
     }
-
-    // handleClose(); // Đóng modal và reset giá trị
   };
-
-  const handleSettingSubmit = async () => {
-    if (!lenhSX || !soCa || !congDoan || !soMay) {
-      setToastMessage('Vui lòng chọn đầy đủ các trường');
-      setToastVisible(true);
-
-      return;
+  // Cập nhật viền mỗi khi dữ liệu thay đổi
+  useEffect(() => {
+    if (submitted) {
+      const updateInputstyle: any = {};
+      Object.keys(fields).forEach(field => {
+        if (fields[field]) {
+          updateInputstyle[field] = { borderColor: 'white' }; // Nếu có giá trị, thì không có viền đỏ
+        } else {
+          updateInputstyle[field] = { borderColor: 'red' }; // Nếu không có giá trị, bôi đỏ viền
+        }
+      });
+      setInputStyles(updateInputstyle); // Cập nhật lại trạng thái viền
     }
-    // Xử lý khi người dùng nhấn nút "Xác nhận"
-    await AsyncStorage.setItem('LenhSX', lenhSX);
-    await AsyncStorage.setItem('SoCa', soCa);
-    await AsyncStorage.setItem('CongDoan', congDoan);
-    await AsyncStorage.setItem('SoMay', soMay);
-    navigate(Screen_Name.Home_Screen);
+  }, [fields]);
+
+  const handleSummit = async () => {
+    setSubmitted(true);
+    let isError = false;
+    const updateInputstyle: any = {};
+
+    Object.keys(fields).forEach(field => {
+      if (!fields[field]) {
+        updateInputstyle[field] = { borderColor: 'red' };
+        isError = true;
+      }
+    });
+    setInputStyles(updateInputstyle);
+
+    if (isError) {
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Error',
+        text2: `Vui lòng nhập đủ các trường`,
+        visibilityTime: 1500,
+        autoHide: true,
+      });
+    } else {
+      await AsyncStorage.setItem('LenhSX', fields.lenhSX);
+      await AsyncStorage.setItem('SoCa', fields.soCa);
+      await AsyncStorage.setItem('CongDoan', fields.congDoan);
+      await AsyncStorage.setItem('SoMay', fields.soMay);
+
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'Success',
+        text2: `Cập nhật thành công`,
+        visibilityTime: 1500,
+        autoHide: true,
+      });
+      setTimeout(() => {
+        navigation.goBack(); // Quay lại màn hình trước
+      }, 1500);
+    }
   };
-  const handleLogout = async () => {
-    dispatch(logout());
-    await AsyncStorage.clear(); // Xóa tất cả dữ liệu trong AsyncStorage
-  };
-  const lenhSX1 = ['CT1', 'CT2', 'CT3'];
-  const soCa1 = ['Ca 1', 'Ca 2', 'Ca 3'];
-  const congDoan1 = ['Công đoạn 1', 'Công đoạn 2', 'Công đoạn 3'];
-  const soMay1 = ['Số máy 1', 'Số máy 2', 'Số máy 3', 'Số máy 4'];
   return (
     <View style={styles.container}>
-      <NavBar title={TITLES.settings} onPress={() => navigation.goBack()} />
-      <View style={AppStyles.body}>
-        <View style={[styles.wrapBody]}>
-          <Text
-            style={[AppStyles.title, { marginBottom: Spacing.xlarge }]}
-          >{`Thiết lập ca làm việc`}</Text>
-          {/* <View>
-            <CustomDropdown
-              label="Lệnh sản xuất"
-              placeHolder="Chọn Lệnh sản xuất"
-              options={['CT1', 'CT2', 'CT3']}
-              value={lenhSX}
-              onSubmit={val => handleValueSubmit(val, 'Lệnh sản xuất')}
-            />
-            <CustomDropdown
-              label="Số ca"
-              placeHolder="Chọn Số ca"
-              options={['Ca 1', 'Ca 2', 'Ca 3']}
-              value={soCa}
-              onSubmit={val => handleValueSubmit(val, 'Số ca')}
-            />
-            <CustomDropdown
-              label="Công đoạn"
-              placeHolder="Chọn Công đoạn"
-              options={['Công đoạn 1', 'Công đoạn 2', 'Công đoạn 3']}
-              value={congDoan}
-              onSubmit={val => handleValueSubmit(val, 'Công đoạn')}
-            />
-            <CustomDropdown
-              label="Số máy"
-              placeHolder="Chọn Số máy"
-              options={[
-                'Số máy 1',
-                'Số máy 2',
-                'Số máy 3',
-                'Số máy 4',
-                'Số máy 5',
-                'Số máy 6',
-                'Số máy 7',
-                'Số máy 8',
-              ]}
-              value={soMay}
-              onSubmit={val => handleValueSubmit(val, 'Số máy')}
-            />
-          </View> */}
-          {/* <View>
-
-            {['lenhSX', 'soCa', 'congDoan', 'soMay'].map((field, index) => (
-              <View
-                key={index}
-                style={{ marginBottom: Spacing.medium, width: '100%' }}
-              >
-                <Text style={AppStyles.label}>{field}</Text>
+      <View style={{ backgroundColor: Colors.primary }}>
+        <NavBar title={TITLES.user} onPress={() => navigation.goBack()} />
+      </View>
+      <View style={[AppStyles.body]}>
+        <View style={styles.wrapBody}>
+          <View>
+            <Text style={AppStyles.title}>Thiết lập ca làm việc</Text>
+            {/* <View>
+              <Text style={AppStyles.label}>Lệnh sản xuất</Text>
+              <TouchableOpacity onPress={() => handlePressModal('lenhSX')}>
+                <Text style={AppStyles.input}>
+                  {fields || 'Chọn lệnh sản xuất'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <Text style={AppStyles.label}>Số máy</Text>
+              <TouchableOpacity onPress={() => handlePressModal('soMay')}>
+                <Text style={AppStyles.input}>{soMay || 'Chọn số máy'} </Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <Text style={AppStyles.label}>Số ca</Text>
+              <TouchableOpacity onPress={() => handlePressModal('soCa')}>
+                <Text style={AppStyles.input}>{soCa || 'Chọn số ca'} </Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <Text style={AppStyles.label}>Công đoạn</Text>
+              <TouchableOpacity onPress={() => handlePressModal('congDoan')}>
+                <Text style={AppStyles.input}>
+                  {congDoan || 'Chọn công đoạn'}{' '}
+                </Text>
+              </TouchableOpacity>
+            </View>
+ */}
+            {[
+              { label: 'Lệnh sản xuất', field: 'lenhSX' },
+              { label: 'Số máy', field: 'soMay' },
+              { label: 'Số ca', field: 'soCa' },
+              { label: 'Công đoạn', field: 'congDoan' },
+            ].map(({ label, field }, index) => (
+              <View key={index} style={{ marginBottom: Spacing.medium }}>
+                <Text style={AppStyles.label}>{label}</Text>
                 <TouchableOpacity
                   onPress={() => {
-                    setCurrentField(field), setShowSelect(true);
+                    setSelectedField(field);
+                    handlePressModal(field);
                   }}
                 >
-                  <Text style={AppStyles.input}>{`Chọn ${field}`}</Text>
+                  <Text
+                    style={[AppStyles.input, inputStyles[field]]}
+                    // editable={false}
+                    // onChangeText={value => handleInputChange(field, value)} // Xử lý thay đổi input
+                  >
+                    {fields[field] || `Chọn ${label}`}
+                  </Text>
                 </TouchableOpacity>
               </View>
             ))}
-            <Modal
-              transparent={true}
-              animationType="slide"
-              visible={showSelects}
-              onRequestClose={() => setShowSelect(false)} // Đóng modal khi nhấn ngoài
-            >
-              <View
-                style={{
-                  flex: 1,
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                  borderRadius: 10,
-                  // top: '40%',
-                  justifyContent: 'center',
-                  // marginHorizontal: Spacing.medium,
-                  paddingVertical: Spacing.medium,
-                  paddingHorizontal: Spacing.medium,
-                }}
-              >
-                {options[currentField]?.map((option: string, index: number) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => handleValueSelect(option)}
-                  >
-                    <Text style={AppStyles.input}>{option}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </Modal>
-            <Text style={AppStyles.label}>Lệnh sản xuất</Text>
-            <TouchableOpacity>
-              <Text style={AppStyles.input}>
-                {lenhSX || 'Chọn lệnh sản xuất'}
-              </Text>
-            </TouchableOpacity>
-          </View> */}
-          <View style={{ flex: 1, marginBottom: 10 }}>
-            <View>
-              <View>
-                <Text style={AppStyles.label}>Chọn lệnh sản xuất</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setSelectedField('lenhSX');
-                    setShowSelect(!showSelects);
-                  }}
-                >
-                  <Text style={AppStyles.input}>
-                    {lenhSX || 'Chon lenh sx'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View>
-                <Text style={AppStyles.label}>Chọn lệnh sản xuất</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setSelectedField('soCa');
-                    setShowSelect(!showSelects);
-                  }}
-                >
-                  <Text style={AppStyles.input}>{soCa || 'Chon so ca'}</Text>
-                </TouchableOpacity>
-              </View>
-              <View>
-                <TouchableOpacity
-                  onPress={() => {
-                    setSelectedField('congDoan');
-                    setShowSelect(!showSelects);
-                  }}
-                >
-                  <Text style={AppStyles.input}>
-                    {congDoan || 'Chon cong doan'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View>
-                <TouchableOpacity
-                  onPress={() => {
-                    setSelectedField('soMay');
-                    setShowSelect(!showSelects);
-                  }}
-                >
-                  <Text style={AppStyles.input}>{soMay || 'Chon so may'}</Text>
-                </TouchableOpacity>
-              </View>
-              {/* <View
-                style={{
-                  display: showSelects ? 'flex' : 'none',
-                  position: 'absolute',
-                  width: '100%',
-                  top: 0,
-                  marginTop: 50,
-                  paddingTop: Spacing.small,
-                  backgroundColor: Colors.white,
-                  zIndex: 9999, // Đảm bảo dropdown luôn xuất hiện phía trên các phần tử khác
-                }}
-              >
-                {lenhSX1.map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => handleValueSelect(item)}
-                    // style={AppStyles.input}
-                  >
-                    <Text style={AppStyles.input}>{item}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View> */}
-            </View>
-            <View
-              style={{
-                position: 'absolute',
-                top: 150, // Điều chỉnh tùy vào vị trí của các input trước đó
-                width: '100%',
-                backgroundColor: Colors.white,
-                zIndex: 9999,
-                padding: Spacing.small,
-                borderRadius: 10,
-                borderWidth: 1,
-                borderColor: '#ddd',
-              }}
-            >
-              {selectedField === 'lenhSX' &&
-                lenhSX1.map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => handleValueSelect(item)}
-                  >
-                    <Text style={AppStyles.input}>{item}</Text>
-                  </TouchableOpacity>
-                ))}
-
-              {selectedField === 'soCa' &&
-                soCa1.map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => handleValueSelect(item)}
-                  >
-                    <Text style={AppStyles.input}>{item}</Text>
-                  </TouchableOpacity>
-                ))}
-
-              {selectedField === 'congDoan' &&
-                congDoan1.map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => handleValueSelect(item)}
-                  >
-                    <Text style={AppStyles.input}>{item}</Text>
-                  </TouchableOpacity>
-                ))}
-
-              {selectedField === 'soMay' &&
-                soMay1.map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => handleValueSelect(item)}
-                  >
-                    <Text style={AppStyles.input}>{item}</Text>
-                  </TouchableOpacity>
-                ))}
-            </View>
-            {/* <View>
-              <Text style={AppStyles.label}>Số máy</Text>
-              <TouchableOpacity onPress={() => console.log('abc')}>
-                <Text style={AppStyles.input}></Text>
-                <View
-                  style={{
-                    display: showSelects ? 'none' : 'none',
-                    position: 'absolute',
-                    top: 70,
-
-                    width: '100%',
-                  }}
-                >
-                  {lenhSX1.map((item, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => handleValueSelect(item)}
-                      // style={AppStyles.input}
-                    >
-                      <Text style={AppStyles.input}>{item}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </TouchableOpacity>
-            </View>
-            <View>
-              <Text style={AppStyles.label}> Công đoạn</Text>
-              <TouchableOpacity onPress={() => console.log('abc')}>
-                <Text style={AppStyles.input}></Text>
-                <View
-                  style={{
-                    display: showSelects ? 'none' : 'none',
-                    position: 'absolute',
-                    top: 70,
-
-                    width: '100%',
-                  }}
-                >
-                  {lenhSX1.map((item, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => handleValueSelect(item)}
-                      // style={AppStyles.input}
-                    >
-                      <Text style={AppStyles.input}>{item}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </TouchableOpacity>
-            </View>
-            <View>
-              <Text style={AppStyles.label}>Số ca </Text>
-              <TouchableOpacity onPress={() => console.log('abc')}>
-                <Text style={AppStyles.input}></Text>
-                <View
-                  style={{
-                    display: showSelects ? 'none' : 'none',
-                    position: 'absolute',
-                    top: 70,
-
-                    width: '100%',
-                  }}
-                >
-                  {lenhSX1.map((item, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => handleValueSelect(item)}
-                      // style={AppStyles.input}
-                    >
-                      <Text style={AppStyles.input}>{item}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </TouchableOpacity>
-            </View> */}
+            <AppButton
+              onPress={() => handleSummit()}
+              title={TITLES.accept}
+              customStyle={[
+                {
+                  marginHorizontal: Spacing.medium,
+                  marginVertical: Spacing.small,
+                },
+              ]}
+            />
           </View>
-          {/* <View style={{ flex: 1 }}>
-            <Text style={AppStyles.label}>Chọn lệnh sản xuất</Text>
-            <TouchableOpacity onPress={() => setShowSelect(!showSelects)}>
-              <Text style={AppStyles.input}></Text>
-              <View
-                style={{
-                  display: showSelects ? 'flex' : 'none',
-                  position: 'absolute',
-                  top: 70,
-
-                  width: '100%',
-                }}
-              >
-                {lenhSX1.map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => handleValueSelect(item)}
-                    // style={AppStyles.input}
-                  >
-                    <Text style={AppStyles.input}>{item}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </TouchableOpacity>
-          </View> */}
-          {/* <AppButton
-            onPress={() => handleSettingSubmit()}
-            title={TITLES.accept}
-            customStyle={[
-              {
-                marginTop: Spacing.xlarge,
-                marginHorizontal: Spacing.medium,
-              },
-            ]}
-          ></AppButton> */}
         </View>
-        <View style={AppStyles.footer}></View>
       </View>
-      {/* Custom Toast */}
+      <UserInfoModal
+        type={type}
+        visible={showModal}
+        onClose={handleModalClose}
+      />
+      <AppToast
+        message={toastMessage}
+        visible={toastVisible}
+        duration={3000}
+        onHide={() => setToastVisible(false)}
+      />
     </View>
   );
 };
@@ -469,13 +217,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    backgroundColor: Colors.primary,
   },
   wrapBody: {
-    flex: 1,
-    paddingVertical: Spacing.xxlarge,
+    // flex: 1,
+    borderRadius: 50,
+    marginTop: Spacing.lagre,
+    paddingVertical: Spacing.lagre,
+    paddingHorizontal: Spacing.medium,
     justifyContent: 'space-around',
-    paddingHorizontal: Spacing.lagre,
+    // marginHorizontal: Spacing.medium,
+    backgroundColor: Colors.Gray,
+  },
+
+  changePassword: {
+    color: 'blue',
+    textAlign: 'right',
+    fontSize: Fonts.normal,
+    paddingHorizontal: Spacing.medium,
+    marginBottom: Spacing.small,
   },
 });
-
 export default SettingScreen;
