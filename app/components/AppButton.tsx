@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     paddingVertical: Spacing.small,
+    paddingHorizontal: Spacing.medium,
   },
   buttonText: {
     color: Colors.white,

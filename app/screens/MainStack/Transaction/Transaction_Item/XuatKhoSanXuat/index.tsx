@@ -23,6 +23,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import CustomDropdown from '../../../../../components/DropDown';
 import { navigate } from '../../../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../../../navigation/ScreenName';
+import UserInfoModal from '../../../../../components/Modal/UserInfo';
+import Toast from 'react-native-toast-message';
 
 interface Props {
   navigation: any;
@@ -41,6 +43,18 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
   const [docDate, setDocDate] = useState(selectedDate);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [type, setType] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [selectedField, setSelectedField] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [slThucXuat, setSLThucXuat] = useState('');
+  const [dvTinh, setDvTinh] = useState('');
+
+  const [fields, setFields] = useState<{ [key: string]: string }>({
+    khoXuat: '',
+    slThucXuat: '',
+    dvTinh: '',
+  });
   useEffect(() => {
     // Lấy dữ liệu từ AsyncStorage khi màn hình được render
     const loadData = async () => {
@@ -57,7 +71,11 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
 
     loadData();
   }, []);
-
+  const [inputStyles, setInputStyles] = useState<{ [key: string]: object }>({
+    khoXuat: {},
+    slThucXuat: {},
+    dvTinh: {},
+  });
   const onSubmit = async () => {
     // Lưu dữ liệu vào AsyncStorage khi người dùng nhấn nút Submit
     try {
@@ -96,53 +114,99 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
     setDocDate(date);
     setModalCalendarVisible(false);
   };
-  const handleValueSubmit = (val: string, dropdownName: string) => {
-    console.log('Selected value:', val);
-    // Cập nhật các state với giá trị đã chọn
-    switch (dropdownName) {
-      case 'Lệnh sản xuất':
-        setLenhSX(val);
-        break;
-      case 'Số ca':
-        setSoCa(val);
-        break;
-      case 'Công đoạn':
-        setCongDoan(val);
-        break;
-      case 'Số máy':
-        setSoMay(val);
-        break;
-    }
+  const handleBackPress = () => {
+    navigation.goBack();
   };
+  useEffect(() => {
+    if (submitted) {
+      const updateInputstyle: any = {};
+
+      Object.keys(fields).forEach(field => {
+        if (fields[field]) {
+          updateInputstyle[field] = { borderColor: 'white' }; // Nếu có giá trị, thì không có viền đỏ
+        } else {
+          updateInputstyle[field] = { borderColor: 'red' }; // Nếu không có giá trị, bôi đỏ viền
+        }
+      });
+      setInputStyles(updateInputstyle); // Cập nhật lại trạng thái viền
+    }
+  }, [fields]);
   const handleSubmit = async () => {
-    // Kiểm tra các trường thông tin
-    if (!lenhSX || !soCa || !soMay || !congDoan) {
-      setToastMessage('Vui lòng điền đầy đủ thông tin');
-      setToastVisible(true);
-      return;
+    // Lưu dữ liệu vào AsyncStorage
+    setSubmitted(true);
+    let isError = false;
+    let isError1 = false;
+    // setFields(prev => ({
+    //   ...prev,
+    //   slThucXuat: slThucXuat,
+    //   dvTinh: dvTinh,
+    // }));
+
+    const updateInputstyle: any = {};
+    Object.keys(fields).forEach(field => {
+      if (!fields[field]) {
+        isError = true;
+        updateInputstyle[field] = { borderColor: 'red' };
+      }
+    });
+
+    // Kiểm tra các trường riêng biệt như slThucXuat và dvTinh
+    if (!slThucXuat) {
+      isError = true;
+      updateInputstyle['slThucXuat'] = { borderColor: 'red' };
     }
 
-    // Lưu dữ liệu vào AsyncStorage
-    try {
-      await AsyncStorage.setItem('LenhSX', lenhSX);
-      await AsyncStorage.setItem('SoCa', soCa);
-      await AsyncStorage.setItem('CongDoan', congDoan);
-      await AsyncStorage.setItem('SoMay', soMay);
-      setToastMessage('Dữ liệu đã được lưu thành công');
-      setToastVisible(true);
-      setTimeout(() => {
-        navigation.goBack(); // Navigate back after 1.5 seconds
-      }, 500);
-    } catch (error) {
-      console.error('Error saving data:', error);
-      setToastMessage('Lỗi khi lưu dữ liệu');
-      setToastVisible(true);
+    if (!dvTinh) {
+      isError = true;
+      updateInputstyle['dvTinh'] = { borderColor: 'red' };
+    }
+    setInputStyles(updateInputstyle);
+    if (isError) {
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Error',
+        text2: `Vui lòng nhập đủ các trường`,
+        visibilityTime: 1500,
+        autoHide: true,
+      });
+    } else if (isError1) {
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Error',
+        text2: `Vui lòng nhập đủ các trường`,
+        visibilityTime: 1500,
+        autoHide: true,
+      });
+    } else {
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'Success',
+        text2: `Cập nhật thành công`,
+        visibilityTime: 1500,
+        autoHide: true,
+      });
+      // setTimeout(() => {
+      //   navigation.goBack(); // Quay lại màn hình trước
+      // }, 1500);
+    }
+  };
+  const handlePressModal = (type: string) => {
+    setType(type);
+    setShowModal(true);
+  };
+  const handleModalClose = (data: string | null) => {
+    setShowModal(false);
+    if (data) {
+      setFields(prev => ({ ...prev, [selectedField]: data }));
     }
   };
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
-        <NavBar title="Xuất Kho Sản Xuất" navigation={navigation} />
+        <NavBar title="Xuất Kho Sản Xuất" onPress={handleBackPress} />
         <KeyboardAwareScrollView
           style={AppStyles.scrollView}
           scrollEnabled
@@ -225,31 +289,34 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
                     /> */}
                     <View>
                       <Text style={AppStyles.label}>Lệnh sản xuất</Text>
-                      <TouchableOpacity>
-                        <Text style={AppStyles.input}>{lenhSX}</Text>
-                      </TouchableOpacity>
+                      <Text style={AppStyles.disable}>{lenhSX}</Text>
                     </View>
-                    <CustomDropdown
-                      label="Số máy"
-                      placeHolder="Chọn Số máy"
-                      options={[
-                        'Số máy 1',
-                        'Số máy 2',
-                        'Số máy 3',
-                        'Số máy 4',
-                        'Số máy 5',
-                        'Số máy 6',
-                        'Số máy 7',
-                        'Số máy 8',
-                      ]}
-                      value={soMay}
-                      onSubmit={val => handleValueSubmit(val, 'Số máy')}
-                    />
+                    <View>
+                      <Text style={AppStyles.label}>Số máy</Text>
+                      <Text style={AppStyles.disable}>{soMay || 'Máy'}</Text>
+                    </View>
                   </View>
                   <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
                     <View>
-                      <Text style={AppStyles.label}>Kho xuất</Text>
-                      <Text style={AppStyles.disable}>{'Kho xuất'}</Text>
+                      {[{ label: 'Kho xuất', field: 'khoXuat' }].map(
+                        ({ label, field }, index) => (
+                          <View key={index}>
+                            <Text style={AppStyles.label}>{label}</Text>
+                            <TouchableOpacity
+                              onPress={() => {
+                                setSelectedField(field);
+                                handlePressModal(field);
+                              }}
+                            >
+                              <Text
+                                style={[AppStyles.input, inputStyles[field]]}
+                              >
+                                {fields[field]}
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        ),
+                      )}
                     </View>
                     <View>
                       <Text style={AppStyles.label}>Ngày xuất Kho</Text>
@@ -264,20 +331,17 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
                       </TouchableOpacity>
                     </View>
 
-                    <CustomDropdown
-                      label="Số ca"
-                      placeHolder="Chọn Số ca"
-                      options={['Ca 1', 'Ca 2', 'Ca 3']}
-                      value={soCa}
-                      onSubmit={val => handleValueSubmit(val, 'Số ca')}
-                    />
-                    <CustomDropdown
-                      label="Công đoạn"
-                      placeHolder="Chọn Công đoạn"
-                      options={['Công đoạn 1', 'Công đoạn 2', 'Công đoạn 3']}
-                      value={congDoan}
-                      onSubmit={val => handleValueSubmit(val, 'Công đoạn')}
-                    />
+                    <View>
+                      <Text style={AppStyles.label}>Số ca</Text>
+                      <Text style={AppStyles.disable}>{soCa || 'Ca'}</Text>
+                    </View>
+
+                    <View>
+                      <Text style={AppStyles.label}>Công đoạn</Text>
+                      <Text style={AppStyles.disable}>
+                        {congDoan || 'Công đoạn'}
+                      </Text>
+                    </View>
                   </View>
                 </View>
               </View>
@@ -311,8 +375,24 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
                     </View>
                   </View>
                   <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
-                    <AppInput label="SL thực xuất"></AppInput>
-                    <AppInput label="DVT"></AppInput>
+                    <AppInput
+                      label="SL thực xuất"
+                      style={inputStyles['slThucXuat']}
+                      value={slThucXuat || ''}
+                      onChangeText={text => {
+                        setSLThucXuat(text);
+                        setFields(prev => ({ ...prev, slThucXuat: text })); // Cập nhật fields
+                      }}
+                    ></AppInput>
+                    <AppInput
+                      label="Đơn vị tính"
+                      style={inputStyles['dvTinh']}
+                      value={dvTinh || ''}
+                      onChangeText={text => {
+                        setDvTinh(text);
+                        setFields(prev => ({ ...prev, dvTinh: text })); // Cập nhật fields
+                      }}
+                    ></AppInput>
                   </View>
                 </View>
               </View>
@@ -370,6 +450,11 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
           }}
         />
       </View>
+      <UserInfoModal
+        type={type}
+        visible={showModal}
+        onClose={handleModalClose}
+      />
       <CalendarModal
         visible={modalCalendarVisible}
         selectedDate={docDate}

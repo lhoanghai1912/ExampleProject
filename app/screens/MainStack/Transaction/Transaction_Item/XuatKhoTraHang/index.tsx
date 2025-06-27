@@ -30,6 +30,8 @@ interface Props {
 }
 const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
   const [soCa, setSoCa] = useState('');
+  const [soPhieu, setSoPhieu] = useState('');
+  const [khoXuat, setKhoXuat] = useState('');
   const [modalCalendarVisible, setModalCalendarVisible] = useState(false);
   const [selectedDate] = useState(moment().format('YYYY-MM-DD'));
   const [docDate, setDocDate] = useState(selectedDate);
@@ -43,8 +45,11 @@ const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
     // Lấy dữ liệu từ AsyncStorage khi màn hình được render
     const loadData = async () => {
       const soCaValue = await AsyncStorage.getItem('SoCa');
-
+      const soPhieuValue = await AsyncStorage.getItem('SoPhieu');
+      const khoXuatValue = await AsyncStorage.getItem('KhoXuat');
       if (soCaValue) setSoCa(soCaValue);
+      if (soPhieuValue) setSoPhieu(soPhieuValue);
+      if (khoXuatValue) setKhoXuat(khoXuatValue);
     };
 
     loadData();
@@ -77,6 +82,9 @@ const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
         break;
     }
   };
+  const handleBackPress = () => {
+    navigation.goBack(); // This will navigate back to the previous screen
+  };
   const handleSubmit = async () => {
     // Kiểm tra các trường thông tin
     if (!soCa) {
@@ -84,7 +92,6 @@ const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
       setToastVisible(true);
       return;
     }
-
     // Lưu dữ liệu vào AsyncStorage
     try {
       await AsyncStorage.setItem('SoCa', soCa);
@@ -101,7 +108,7 @@ const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
   };
   return (
     <View style={styles.container}>
-      <NavBar title="Trả lại NVL " navigation={navigation} />
+      <NavBar title="Trả lại NVL " onPress={handleBackPress} />
       <KeyboardAwareScrollView
         style={AppStyles.scrollView}
         scrollEnabled
@@ -115,27 +122,6 @@ const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
               marginHorizontal: Spacing.medium,
             }}
           >
-            <TouchableOpacity
-              onPress={() => handleQR()}
-              style={{
-                backgroundColor: Colors.Gray,
-                padding: 5,
-                width: 50,
-                height: 50,
-                borderRadius: 500,
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'absolute',
-                top: Spacing.small,
-                right: Spacing.small,
-                zIndex: 1,
-              }}
-            >
-              <Image
-                source={ICONS.scan}
-                style={[AppStyles.icon, { borderRadius: 500 }]}
-              />
-            </TouchableOpacity>
             <View
               style={{
                 borderColor: Colors.Gray,
@@ -146,9 +132,39 @@ const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
                 paddingHorizontal: Spacing.small,
               }}
             >
-              <Text style={[AppStyles.text, { fontSize: Fonts.large }]}>
-                Thông tin Phiếu
-              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingHorizontal: Spacing.small,
+                }}
+              >
+                <Text
+                  style={[
+                    AppStyles.text,
+                    { fontSize: Fonts.large, verticalAlign: 'middle' },
+                  ]}
+                >
+                  Thông tin Phiếu
+                </Text>
+                <TouchableOpacity
+                  onPress={() => handleQR()}
+                  style={{
+                    backgroundColor: Colors.Gray,
+                    padding: 5,
+                    width: 50,
+                    height: 50,
+                    borderRadius: 500,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Image
+                    source={ICONS.scan}
+                    style={[AppStyles.icon, { borderRadius: 500 }]}
+                  />
+                </TouchableOpacity>
+              </View>
               <View
                 style={{
                   flexDirection: 'row',
@@ -157,14 +173,14 @@ const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
                 }}
               >
                 <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
-                  <AppInput label="Số phiếu" editable={false}></AppInput>
-                  <CustomDropdown
-                    label="Số ca"
-                    placeHolder="Chọn Số ca"
-                    options={['Ca1', 'Ca2', 'Ca3']}
-                    value={soCa}
-                    onSubmit={val => handleValueSubmit(val, 'Số ca')}
-                  />
+                  <View>
+                    <Text style={AppStyles.label}>Số phiếu</Text>
+                    <Text style={AppStyles.disable}>{soPhieu || ''}</Text>
+                  </View>
+                  <View>
+                    <Text style={AppStyles.label}>Số ca</Text>
+                    <Text style={AppStyles.disable}>{soCa || 'Ca'}</Text>
+                  </View>
                 </View>
                 <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
                   <TouchableOpacity
@@ -203,14 +219,32 @@ const XuatKhoTraHangScreen: React.FC<Props> = ({ navigation }) => {
                 }}
               >
                 <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
-                  <AppInput label="Mã TP/BTP" editable={false}></AppInput>
-                  <AppInput label="Tên NVL" editable={false}></AppInput>
-                  <AppInput label="Số lô" editable={false}></AppInput>
+                  <View>
+                    <Text style={AppStyles.label}>Mã NVL</Text>
+                    <Text style={AppStyles.disable}>{soPhieu || ''}</Text>
+                  </View>
+                  <View>
+                    <Text style={AppStyles.label}>Tên NVL</Text>
+                    <Text style={AppStyles.disable}>{soPhieu || ''}</Text>
+                  </View>
+                  <View>
+                    <Text style={AppStyles.label}>Số lô</Text>
+                    <Text style={AppStyles.disable}>{soPhieu || ''}</Text>
+                  </View>
                 </View>
                 <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
-                  <AppInput label="SL đã xuất"></AppInput>
-                  <AppInput label="SL thực trả"></AppInput>
-                  <AppInput label="DVT"></AppInput>
+                  <View>
+                    <Text style={AppStyles.label}>SL đã xuất</Text>
+                    <Text style={AppStyles.input}>{soPhieu || ''}</Text>
+                  </View>
+                  <View>
+                    <Text style={AppStyles.label}>SL thực trả</Text>
+                    <Text style={AppStyles.input}>{soPhieu || ''}</Text>
+                  </View>
+                  <View>
+                    <Text style={AppStyles.label}>Đơn vị tính</Text>
+                    <Text style={AppStyles.disable}>{soPhieu || ''}</Text>
+                  </View>
                 </View>
               </View>
             </View>

@@ -82,7 +82,9 @@ const SettingScreen: React.FC<Props> = ({ navigation }) => {
       setInputStyles(updateInputstyle); // Cập nhật lại trạng thái viền
     }
   }, [fields]);
-
+  const handleBackPress = () => {
+    navigation.goBack();
+  };
   const handleSummit = async () => {
     setSubmitted(true);
     let isError = false;
@@ -127,41 +129,12 @@ const SettingScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={{ backgroundColor: Colors.primary }}>
-        <NavBar title={TITLES.user} onPress={() => navigation.goBack()} />
+        <NavBar title={TITLES.user} onPress={handleBackPress} />
       </View>
       <View style={[AppStyles.body]}>
         <View style={styles.wrapBody}>
           <View>
             <Text style={AppStyles.title}>Thiết lập ca làm việc</Text>
-            {/* <View>
-              <Text style={AppStyles.label}>Lệnh sản xuất</Text>
-              <TouchableOpacity onPress={() => handlePressModal('lenhSX')}>
-                <Text style={AppStyles.input}>
-                  {fields || 'Chọn lệnh sản xuất'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View>
-              <Text style={AppStyles.label}>Số máy</Text>
-              <TouchableOpacity onPress={() => handlePressModal('soMay')}>
-                <Text style={AppStyles.input}>{soMay || 'Chọn số máy'} </Text>
-              </TouchableOpacity>
-            </View>
-            <View>
-              <Text style={AppStyles.label}>Số ca</Text>
-              <TouchableOpacity onPress={() => handlePressModal('soCa')}>
-                <Text style={AppStyles.input}>{soCa || 'Chọn số ca'} </Text>
-              </TouchableOpacity>
-            </View>
-            <View>
-              <Text style={AppStyles.label}>Công đoạn</Text>
-              <TouchableOpacity onPress={() => handlePressModal('congDoan')}>
-                <Text style={AppStyles.input}>
-                  {congDoan || 'Chọn công đoạn'}{' '}
-                </Text>
-              </TouchableOpacity>
-            </View>
- */}
             {[
               { label: 'Lệnh sản xuất', field: 'lenhSX' },
               { label: 'Số máy', field: 'soMay' },

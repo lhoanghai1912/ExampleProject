@@ -32,13 +32,24 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({
     soMay: ['May 1', 'May 2', 'May 3', 'May 4'],
     congDoan: ['congDoan 1', 'congDoan 2', 'congDoan 3', 'congDoan 4'],
     soCa: ['Ca 1', 'Ca 2', 'Ca 3', 'Ca 4'],
+    khoXuat: ['Kho 1', 'Kho 2', 'Kho 3', 'Kho 4'],
+  };
+  const dataLabel: Record<string, string[]> = {
+    department: ['phòng ban'],
+    center: ['vị trí'],
+    lenhSX: ['lệnh sản xuất'],
+    soMay: ['số máy'],
+    congDoan: ['công đoạn'],
+    soCa: ['số ca'],
+    khoXuat: ['kho xuất'],
   };
   const data = dataField[type] || [];
+  const label = dataLabel[type] || [];
   return (
     <Modal visible={visible} transparent={true} animationType="slide">
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={AppStyles.title}>Chọn {type}</Text>
+          <Text style={AppStyles.title}>{`Chọn ${label}`}</Text>
           {data.map((item, index) => (
             <TouchableOpacity
               key={index}

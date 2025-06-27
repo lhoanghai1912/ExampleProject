@@ -19,11 +19,32 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ visible, onClose }) => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [inputStyles, setInputStyles] = useState({
+    password: {},
     newPassword: {},
     confirmPassword: {},
   });
+  useEffect(() => {
+    setPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  }, [onClose]);
   const handleSubmit = () => {
-    if (newPassword != confirmPassword) {
+    if (password !== userData.password) {
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Error',
+        text2: `Mật khẩu không đúng`,
+        visibilityTime: 3000,
+        autoHide: true,
+      });
+      setInputStyles({
+        password: { borderColor: 'red', borderWidth: 1 },
+        newPassword: {},
+        confirmPassword: {},
+      });
+      return;
+    } else if (newPassword != confirmPassword) {
       Toast.show({
         type: 'error',
         position: 'top',
@@ -33,18 +54,9 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ visible, onClose }) => {
         autoHide: true,
       });
       setInputStyles({
+        password: {},
         newPassword: { borderColor: 'red', borderWidth: 1 },
         confirmPassword: { borderColor: 'red', borderWidth: 1 },
-      });
-      return;
-    } else if (password !== userData.password) {
-      Toast.show({
-        type: 'error',
-        position: 'top',
-        text1: 'Error',
-        text2: `Mật khẩu không đúng`,
-        visibilityTime: 3000,
-        autoHide: true,
       });
       return;
     }
@@ -57,7 +69,7 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ visible, onClose }) => {
       autoHide: true,
     });
     dispatch(updatePassword(newPassword)); // Dùng dispatch để gọi action cập nhật mật khẩu
-    setInputStyles({ newPassword: {}, confirmPassword: {} });
+    setInputStyles({ password: {}, newPassword: {}, confirmPassword: {} });
     onClose();
   };
 
@@ -73,6 +85,7 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ visible, onClose }) => {
               value={password}
               onChangeText={setPassword}
               secureTextEntry={true}
+              style={inputStyles.password}
             />
             <AppInput
               label="Mật khẩu mới"

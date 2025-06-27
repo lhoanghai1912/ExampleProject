@@ -27,17 +27,28 @@ const NhapThanhPhamScreen: React.FC<Props> = ({ navigation }) => {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [lenhSX, setLenhSX] = useState('');
+  const [soPhieu, setSoPhieu] = useState('');
+  const [tenTP, setTenTP] = useState('');
+  const [maTP, setMaTP] = useState('');
+
   useEffect(() => {
     // Lấy dữ liệu từ AsyncStorage khi màn hình được render
     const loadData = async () => {
       const lenhSXValue = await AsyncStorage.getItem('LenhSX');
-
+      const soPhieuValue = await AsyncStorage.getItem('SoPhieu');
+      const maTpValue = await AsyncStorage.getItem('MaTP');
+      const tenTPValue = await AsyncStorage.getItem('TenTP');
       if (lenhSXValue) setLenhSX(lenhSXValue);
+      if (soPhieuValue) setSoPhieu(soPhieuValue);
+      if (maTpValue) setSoPhieu(maTpValue);
+      if (tenTPValue) setSoPhieu(tenTPValue);
     };
 
     loadData();
   }, []);
-
+  const handleBackPress = () => {
+    navigation.goBack();
+  };
   const handleDateSelect = (date: string) => {
     setDocDate(date);
     setModalCalendarVisible(false);
@@ -75,7 +86,7 @@ const NhapThanhPhamScreen: React.FC<Props> = ({ navigation }) => {
   };
   return (
     <View style={styles.container}>
-      <NavBar title="Nhập Thành Phẩm" navigation={navigation} />
+      <NavBar title="Nhập Thành Phẩm" onPress={handleBackPress} />
       <KeyboardAwareScrollView
         style={AppStyles.scrollView}
         scrollEnabled
@@ -110,14 +121,18 @@ const NhapThanhPhamScreen: React.FC<Props> = ({ navigation }) => {
                 }}
               >
                 <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
-                  <AppInput label="Số phiếu" editable={false}></AppInput>
-                  <CustomDropdown
-                    label="Lệnh sản xuất"
-                    placeHolder="Chọn Lệnh sản xuất"
-                    options={['CT1', 'CT2', 'CT3']}
-                    value={lenhSX}
-                    onSubmit={val => handleValueSubmit(val, 'Lệnh sản xuất')}
-                  />
+                  <View>
+                    <Text style={AppStyles.label}>Số phiếu</Text>
+                    <Text style={AppStyles.disable}>{soPhieu || ''}</Text>
+                  </View>
+                  <AppInput
+                    editable={false}
+                    label="Ngày nhập kho"
+                    value={docDate}
+                    onPress={() => {
+                      setModalCalendarVisible(true);
+                    }}
+                  ></AppInput>
                 </View>
                 <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
                   <TouchableOpacity
@@ -125,14 +140,10 @@ const NhapThanhPhamScreen: React.FC<Props> = ({ navigation }) => {
                       setModalCalendarVisible(true);
                     }}
                   >
-                    <AppInput
-                      editable={false}
-                      label="Ngày nhập kho"
-                      value={docDate}
-                      onPress={() => {
-                        setModalCalendarVisible(true);
-                      }}
-                    ></AppInput>
+                    <View>
+                      <Text style={AppStyles.label}>Lệnh sản xuất</Text>
+                      <Text style={AppStyles.disable}>{lenhSX || ''}</Text>
+                    </View>
                   </TouchableOpacity>
                   <AppInput editable={false} label="Kho nhập"></AppInput>
                 </View>
@@ -159,11 +170,17 @@ const NhapThanhPhamScreen: React.FC<Props> = ({ navigation }) => {
                 }}
               >
                 <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
-                  <AppInput label="Mã TP/BTP" editable={false}></AppInput>
-                  <AppInput label="Tên TP/BTP" editable={false}></AppInput>
+                  <View>
+                    <Text style={AppStyles.label}>Mã TP/BTP</Text>
+                    <Text style={AppStyles.disable}>{soPhieu || ''}</Text>
+                  </View>
+                  <AppInput label="SL nhập kho"></AppInput>
                 </View>
                 <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
-                  <AppInput label="SL nhập kho"></AppInput>
+                  <View>
+                    <Text style={AppStyles.label}>Tên TP/BTP</Text>
+                    <Text style={AppStyles.disable}>{soPhieu || ''}</Text>
+                  </View>
                   <AppInput label="DVT"></AppInput>
                 </View>
               </View>
