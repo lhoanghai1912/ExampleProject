@@ -12,6 +12,7 @@ import { Fonts } from '../../../utils/fontSize';
 import Toast from 'react-native-toast-message';
 import { TextInput } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LinearGradient from 'react-native-linear-gradient';
 
 interface Props {
   navigation: any;
@@ -23,11 +24,28 @@ const SettingScreen: React.FC<Props> = ({ navigation }) => {
   // const [congDoan, setCongDoan] = useState('');
   // const [soMay, setSoMay] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [type, setType] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [selectedField, setSelectedField] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [showIndex, setShowIndex] = useState<number | null>(null);
+
+  const data = [
+    {
+      label: 'Lệnh sản xuất',
+      field: 'lenhSX',
+      data: ['lenhSX1', 'lenhSX2', 'lenhSX3', 'lenhSX4'],
+    },
+    {
+      label: 'Số máy',
+      field: 'soMay',
+      data: ['May 1', 'May 2', 'May 3', 'May 4'],
+    },
+    { label: 'Số ca', field: 'soCa', data: ['Ca 1', 'Ca 2', 'Ca 3', 'Ca 4'] },
+    {
+      label: 'Công đoạn',
+      field: 'congDoan',
+      data: ['congDoan 1', 'congDoan 2', 'congDoan 3', 'congDoan 4'],
+    },
+  ];
   const [fields, setFields] = useState<{ [key: string]: string }>({
     lenhSX: '',
     soCa: '',
@@ -51,10 +69,6 @@ const SettingScreen: React.FC<Props> = ({ navigation }) => {
     loadData();
   }, []);
 
-  const handlePressModal = (type: string) => {
-    setType(type);
-    setShowModal(true);
-  };
   const [inputStyles, setInputStyles] = useState<{ [key: string]: object }>({
     lenhSX: {},
     soCa: {},
@@ -62,13 +76,7 @@ const SettingScreen: React.FC<Props> = ({ navigation }) => {
     soMay: {},
   });
 
-  const handleModalClose = (data: string | null) => {
-    setShowModal(false);
-    if (data) {
-      setFields(prev => ({ ...prev, [selectedField]: data }));
-    }
-  };
-  // Cập nhật viền mỗi khi dữ liệu thay đổi
+  // Cập nhật viền mỗi kh dữ liệu thay đổi
   useEffect(() => {
     if (submitted) {
       const updateInputstyle: any = {};
@@ -127,80 +135,86 @@ const SettingScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
   return (
-    <View style={styles.container}>
-      <View style={{ backgroundColor: Colors.primary }}>
-        <NavBar title={TITLES.user} onPress={handleBackPress} />
-      </View>
-      <View style={[AppStyles.body]}>
-        <View style={styles.wrapBody}>
-          <View>
-            <Text style={AppStyles.title}>Thiết lập ca làm việc</Text>
-            {[
-              { label: 'Lệnh sản xuất', field: 'lenhSX' },
-              { label: 'Số máy', field: 'soMay' },
-              { label: 'Số ca', field: 'soCa' },
-              { label: 'Công đoạn', field: 'congDoan' },
-            ].map(({ label, field }, index) => (
-              <View key={index} style={{ marginBottom: Spacing.medium }}>
-                <Text style={AppStyles.label}>{label}</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setSelectedField(field);
-                    handlePressModal(field);
-                  }}
-                >
-                  <Text
-                    style={[AppStyles.input, inputStyles[field]]}
-                    // editable={false}
-                    // onChangeText={value => handleInputChange(field, value)} // Xử lý thay đổi input
-                  >
-                    {fields[field] || `Chọn ${label}`}
-                  </Text>
-                </TouchableOpacity>
+    <LinearGradient
+      colors={[Colors.primary, '#ffffff']}
+      style={styles.container}
+    >
+      <View style={styles.container}>
+        <View style={{ backgroundColor: Colors.primary }}>
+          <NavBar title={TITLES.settings} onPress={handleBackPress} />
+        </View>
+        <View style={[AppStyles.body]}>
+          <View style={styles.wrapBody}>
+            <View>
+              <Text style={AppStyles.title}>Thiết lập ca làm việc</Text>
+              <View>
+                {data.map((dropdown, idx) => (
+                  <View key={idx} style={AppStyles.dropdownWrapper}>
+                    <Text style={AppStyles.label}>{dropdown.label}</Text>
+                    <TouchableOpacity
+                      onPress={() =>
+                        setShowIndex(showIndex === idx ? null : idx)
+                      }
+                    >
+                      <Text
+                        style={[AppStyles.input, inputStyles[dropdown.field]]}
+                      >
+                        {fields[dropdown.field] || 'Select value'}
+                      </Text>
+                    </TouchableOpacity>
+
+                    {showIndex === idx && (
+                      <View style={AppStyles.dropdown}>
+                        {dropdown.data.map((item: string, i: number) => (
+                          <TouchableOpacity
+                            key={i}
+                            style={AppStyles.dropdownItem}
+                            onPress={() => {
+                              setFields(prev => ({
+                                ...prev,
+                                [dropdown.field]: item,
+                              }));
+                              setShowIndex(null);
+                            }}
+                          >
+                            <Text style={AppStyles.text}>{item}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
+                    )}
+                  </View>
+                ))}
               </View>
-            ))}
-            <AppButton
-              onPress={() => handleSummit()}
-              title={TITLES.accept}
-              customStyle={[
-                {
-                  marginHorizontal: Spacing.medium,
-                  marginVertical: Spacing.small,
-                },
-              ]}
-            />
+              <AppButton
+                onPress={() => handleSummit()}
+                title={TITLES.accept}
+                customStyle={[
+                  {
+                    marginHorizontal: Spacing.medium,
+                    marginVertical: Spacing.small,
+                  },
+                ]}
+              />
+            </View>
           </View>
         </View>
       </View>
-      <UserInfoModal
-        type={type}
-        visible={showModal}
-        onClose={handleModalClose}
-      />
-      <AppToast
-        message={toastMessage}
-        visible={toastVisible}
-        duration={3000}
-        onHide={() => setToastVisible(false)}
-      />
-    </View>
+    </LinearGradient>
   );
 };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: Colors.primary,
   },
   wrapBody: {
-    // flex: 1,
+    flex: 1,
+    borderWidth: 2,
+    borderColor: Colors.white,
     borderRadius: 50,
-    marginTop: Spacing.lagre,
-    paddingVertical: Spacing.lagre,
+    marginTop: Spacing.large,
+    paddingVertical: Spacing.large,
     paddingHorizontal: Spacing.medium,
-    justifyContent: 'space-around',
-    // marginHorizontal: Spacing.medium,
-    backgroundColor: Colors.Gray,
   },
 
   changePassword: {

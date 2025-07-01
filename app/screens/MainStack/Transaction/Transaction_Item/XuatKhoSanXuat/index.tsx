@@ -25,6 +25,7 @@ import { navigate } from '../../../../../navigation/RootNavigator';
 import { Screen_Name } from '../../../../../navigation/ScreenName';
 import UserInfoModal from '../../../../../components/Modal/UserInfo';
 import Toast from 'react-native-toast-message';
+import LinearGradient from 'react-native-linear-gradient';
 
 interface Props {
   navigation: any;
@@ -41,15 +42,17 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
   const [modalCalendarVisible, setModalCalendarVisible] = useState(false);
   const [selectedDate] = useState(moment().format('YYYY-MM-DD'));
   const [docDate, setDocDate] = useState(selectedDate);
-  const [toastVisible, setToastVisible] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [type, setType] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [selectedField, setSelectedField] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [slThucXuat, setSLThucXuat] = useState('');
+  const [showIndex, setShowIndex] = useState<number | null>(null);
   const [dvTinh, setDvTinh] = useState('');
-
+  const data = [
+    {
+      label: 'Kho xuất',
+      field: 'khoXuat',
+      data: ['Kho 1', 'Kho 2', 'Kho 3', 'Kho 4'],
+    },
+  ];
   const [fields, setFields] = useState<{ [key: string]: string }>({
     khoXuat: '',
     slThucXuat: '',
@@ -81,9 +84,6 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
     try {
       console.log('Data saved successfully');
       if (!lenhSX || !soCa || !congDoan || !soMay) {
-        setToastMessage('Vui lòng chọn đầy đủ các trường');
-        setToastVisible(true);
-
         return;
       }
       // Xử lý khi người dùng nhấn nút "Xác nhận"
@@ -136,11 +136,6 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
     setSubmitted(true);
     let isError = false;
     let isError1 = false;
-    // setFields(prev => ({
-    //   ...prev,
-    //   slThucXuat: slThucXuat,
-    //   dvTinh: dvTinh,
-    // }));
 
     const updateInputstyle: any = {};
     Object.keys(fields).forEach(field => {
@@ -188,286 +183,296 @@ const XuatKhoSanXuatScreen: React.FC<Props> = ({ navigation }) => {
         visibilityTime: 1500,
         autoHide: true,
       });
-      // setTimeout(() => {
-      //   navigation.goBack(); // Quay lại màn hình trước
-      // }, 1500);
+      setTimeout(() => {
+        navigation.goBack(); // Quay lại màn hình trước
+      }, 1500);
     }
   };
-  const handlePressModal = (type: string) => {
-    setType(type);
-    setShowModal(true);
-  };
-  const handleModalClose = (data: string | null) => {
-    setShowModal(false);
-    if (data) {
-      setFields(prev => ({ ...prev, [selectedField]: data }));
-    }
-  };
+
   return (
-    <View style={styles.container}>
-      <View style={{ flex: 1 }}>
-        <NavBar title="Xuất Kho Sản Xuất" onPress={handleBackPress} />
-        <KeyboardAwareScrollView
-          style={AppStyles.scrollView}
-          scrollEnabled
-          contentContainerStyle={AppStyles.scrollContent}
-        >
-          <View style={[AppStyles.body, { marginBottom: Spacing.xlarge }]}>
-            <View
-              style={{
-                flex: 1,
-                marginVertical: Spacing.lagre,
-                marginHorizontal: Spacing.medium,
-              }}
-            >
+    <LinearGradient
+      colors={[Colors.primary, '#ffffff']}
+      style={styles.container}
+    >
+      <View style={styles.container}>
+        <View style={{ flex: 1 }}>
+          <NavBar title="Xuất Kho Sản Xuất" onPress={handleBackPress} />
+          <KeyboardAwareScrollView
+            style={AppStyles.scrollView}
+            scrollEnabled
+            contentContainerStyle={AppStyles.scrollContent}
+          >
+            <View style={[AppStyles.body, { marginBottom: Spacing.xlarge }]}>
               <View
                 style={{
-                  borderColor: Colors.Gray,
-                  borderWidth: 1,
-                  marginBottom: Spacing.medium,
-                  borderRadius: 10,
-                  paddingVertical: Spacing.small,
-                  paddingHorizontal: Spacing.small,
+                  flex: 1,
+                  marginVertical: Spacing.large,
+                  marginHorizontal: Spacing.medium,
                 }}
               >
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
+                    borderColor: Colors.Gray,
+                    borderWidth: 1,
+                    marginBottom: Spacing.medium,
+                    borderRadius: 10,
+                    paddingVertical: Spacing.small,
                     paddingHorizontal: Spacing.small,
                   }}
                 >
-                  <Text
-                    style={[
-                      AppStyles.text,
-                      { fontSize: Fonts.large, verticalAlign: 'middle' },
-                    ]}
-                  >
-                    Thông tin Phiếu
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => handleQR()}
+                  <View
                     style={{
-                      backgroundColor: Colors.Gray,
-                      padding: 5,
-                      width: 50,
-                      height: 50,
-                      borderRadius: 500,
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      paddingHorizontal: Spacing.small,
                     }}
                   >
-                    <Image
-                      source={ICONS.scan}
-                      style={[AppStyles.icon, { borderRadius: 500 }]}
-                    />
-                  </TouchableOpacity>
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: Spacing.medium,
-                  }}
-                >
-                  <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
-                    <View>
-                      <Text style={AppStyles.label}>Số phiếu</Text>
-                      <Text style={AppStyles.disable}>{'Số phiếu'}</Text>
-                    </View>
-                    <View>
-                      <Text style={AppStyles.label}>Số lô</Text>
-                      <Text style={AppStyles.disable}>{'Số lô'}</Text>
-                    </View>
-                    {/* <CustomDropdown
-                      label="Lệnh sản xuất"
-                      placeHolder="Chọn Lệnh sản xuất"
-                      options={['CT1', 'CT2', 'CT3']}
-                      value={lenhSX}
-                      onSubmit={val => handleValueSubmit(val, 'Lệnh sản xuất')}
-                    /> */}
-                    <View>
-                      <Text style={AppStyles.label}>Lệnh sản xuất</Text>
-                      <Text style={AppStyles.disable}>{lenhSX}</Text>
-                    </View>
-                    <View>
-                      <Text style={AppStyles.label}>Số máy</Text>
-                      <Text style={AppStyles.disable}>{soMay || 'Máy'}</Text>
-                    </View>
+                    <Text
+                      style={[
+                        AppStyles.text,
+                        { fontSize: Fonts.large, verticalAlign: 'middle' },
+                      ]}
+                    >
+                      Thông tin Phiếu
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => handleQR()}
+                      style={{
+                        backgroundColor: Colors.Gray,
+                        padding: 5,
+                        width: 50,
+                        height: 50,
+                        borderRadius: 500,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Image
+                        source={ICONS.scan}
+                        style={[AppStyles.icon, { borderRadius: 500 }]}
+                      />
+                    </TouchableOpacity>
                   </View>
-                  <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
-                    <View>
-                      {[{ label: 'Kho xuất', field: 'khoXuat' }].map(
-                        ({ label, field }, index) => (
-                          <View key={index}>
-                            <Text style={AppStyles.label}>{label}</Text>
-                            <TouchableOpacity
-                              onPress={() => {
-                                setSelectedField(field);
-                                handlePressModal(field);
-                              }}
-                            >
-                              <Text
-                                style={[AppStyles.input, inputStyles[field]]}
-                              >
-                                {fields[field]}
-                              </Text>
-                            </TouchableOpacity>
-                          </View>
-                        ),
-                      )}
-                    </View>
-                    <View>
-                      <Text style={AppStyles.label}>Ngày xuất Kho</Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setModalCalendarVisible(true);
-                        }}
-                      >
-                        <Text style={AppStyles.input}>
-                          {moment(docDate).format('DD/MM/YYYY')}
+
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      marginTop: Spacing.medium,
+                    }}
+                  >
+                    <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
+                      <View>
+                        <Text style={AppStyles.label}>Số phiếu</Text>
+                        <Text style={AppStyles.disable}>{'Số phiếu'}</Text>
+                      </View>
+                      <View>
+                        <Text style={AppStyles.label}>Số lô</Text>
+                        <Text style={AppStyles.disable}>{'Số lô'}</Text>
+                      </View>
+                      <View>
+                        <Text style={AppStyles.label}>Lệnh sản xuất</Text>
+                        <Text style={AppStyles.disable}>
+                          {lenhSX || 'Lệnh sản xuất'}
                         </Text>
-                      </TouchableOpacity>
+                      </View>
+                      <View>
+                        <Text style={AppStyles.label}>Số máy</Text>
+                        <Text style={AppStyles.disable}>{soMay || 'Máy'}</Text>
+                      </View>
                     </View>
+                    <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
+                      <View>
+                        <View>
+                          {data.map((dropdown, idx) => (
+                            <View key={idx} style={AppStyles.dropdownWrapper}>
+                              <Text style={AppStyles.label}>
+                                {dropdown.label}
+                              </Text>
+                              <TouchableOpacity
+                                onPress={() =>
+                                  setShowIndex(showIndex === idx ? null : idx)
+                                }
+                              >
+                                <Text
+                                  style={[
+                                    AppStyles.input,
+                                    inputStyles[dropdown.field],
+                                  ]}
+                                >
+                                  {fields[dropdown.field] || 'Select value'}
+                                </Text>
+                              </TouchableOpacity>
 
-                    <View>
-                      <Text style={AppStyles.label}>Số ca</Text>
-                      <Text style={AppStyles.disable}>{soCa || 'Ca'}</Text>
-                    </View>
+                              {showIndex === idx && (
+                                <View style={AppStyles.dropdown}>
+                                  {dropdown.data.map(
+                                    (item: string, i: number) => (
+                                      <TouchableOpacity
+                                        key={i}
+                                        style={AppStyles.dropdownItem}
+                                        onPress={() => {
+                                          setFields(prev => ({
+                                            ...prev,
+                                            [dropdown.field]: item,
+                                          }));
+                                          setShowIndex(null);
+                                        }}
+                                      >
+                                        <Text style={AppStyles.text}>
+                                          {item}
+                                        </Text>
+                                      </TouchableOpacity>
+                                    ),
+                                  )}
+                                </View>
+                              )}
+                            </View>
+                          ))}
+                        </View>
+                      </View>
+                      <View>
+                        <Text style={AppStyles.label}>Ngày xuất Kho</Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setModalCalendarVisible(true);
+                          }}
+                        >
+                          <Text style={AppStyles.input}>
+                            {moment(docDate).format('DD/MM/YYYY')}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
 
-                    <View>
-                      <Text style={AppStyles.label}>Công đoạn</Text>
-                      <Text style={AppStyles.disable}>
-                        {congDoan || 'Công đoạn'}
-                      </Text>
+                      <View>
+                        <Text style={AppStyles.label}>Số ca</Text>
+                        <Text style={AppStyles.disable}>{soCa || 'Ca'}</Text>
+                      </View>
+
+                      <View>
+                        <Text style={AppStyles.label}>Công đoạn</Text>
+                        <Text style={AppStyles.disable}>
+                          {congDoan || 'Công đoạn'}
+                        </Text>
+                      </View>
                     </View>
                   </View>
                 </View>
-              </View>
-              <View
-                style={{
-                  borderColor: Colors.Gray,
-                  borderWidth: 1,
-                  borderRadius: 10,
-                  paddingVertical: Spacing.small,
-                  paddingHorizontal: Spacing.small,
-                }}
-              >
-                <Text style={[AppStyles.text, { fontSize: Fonts.large }]}>
-                  Thông tin Vật liệu
-                </Text>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: Spacing.medium,
+                    borderColor: Colors.Gray,
+                    borderWidth: 1,
+                    borderRadius: 10,
+                    paddingVertical: Spacing.small,
+                    paddingHorizontal: Spacing.small,
                   }}
                 >
-                  <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
-                    <View>
-                      <Text style={AppStyles.label}>Mã NVL</Text>
-                      <Text style={AppStyles.disable}>{'Mã NVL'}</Text>
+                  <Text style={[AppStyles.text, { fontSize: Fonts.large }]}>
+                    Thông tin Vật liệu
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      marginTop: Spacing.medium,
+                    }}
+                  >
+                    <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
+                      <View>
+                        <Text style={AppStyles.label}>Mã NVL</Text>
+                        <Text style={AppStyles.disable}>{'Mã NVL'}</Text>
+                      </View>
+                      <View>
+                        <Text style={AppStyles.label}>Tên NVL</Text>
+                        <Text style={AppStyles.disable}>{'Tên NVL'}</Text>
+                      </View>
                     </View>
-                    <View>
-                      <Text style={AppStyles.label}>Tên NVL</Text>
-                      <Text style={AppStyles.disable}>{'Tên NVL'}</Text>
+                    <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
+                      <AppInput
+                        label="SL thực xuất"
+                        style={inputStyles['slThucXuat']}
+                        value={slThucXuat || ''}
+                        onChangeText={text => {
+                          setSLThucXuat(text);
+                          setFields(prev => ({ ...prev, slThucXuat: text })); // Cập nhật fields
+                        }}
+                      ></AppInput>
+                      <AppInput
+                        label="Đơn vị tính"
+                        style={inputStyles['dvTinh']}
+                        value={dvTinh || ''}
+                        onChangeText={text => {
+                          setDvTinh(text);
+                          setFields(prev => ({ ...prev, dvTinh: text })); // Cập nhật fields
+                        }}
+                      ></AppInput>
                     </View>
-                  </View>
-                  <View style={{ flex: 1, marginHorizontal: Spacing.medium }}>
-                    <AppInput
-                      label="SL thực xuất"
-                      style={inputStyles['slThucXuat']}
-                      value={slThucXuat || ''}
-                      onChangeText={text => {
-                        setSLThucXuat(text);
-                        setFields(prev => ({ ...prev, slThucXuat: text })); // Cập nhật fields
-                      }}
-                    ></AppInput>
-                    <AppInput
-                      label="Đơn vị tính"
-                      style={inputStyles['dvTinh']}
-                      value={dvTinh || ''}
-                      onChangeText={text => {
-                        setDvTinh(text);
-                        setFields(prev => ({ ...prev, dvTinh: text })); // Cập nhật fields
-                      }}
-                    ></AppInput>
                   </View>
                 </View>
               </View>
+              <AppButton
+                title={TITLES.accept}
+                onPress={() => handleSubmit()}
+                customStyle={[{ marginHorizontal: Spacing.xxxlarge }]}
+              ></AppButton>
             </View>
-            <AppButton
-              title={TITLES.accept}
-              onPress={() => handleSubmit()}
-              customStyle={[{ marginHorizontal: Spacing.xxxlarge }]}
-            ></AppButton>
-          </View>
-        </KeyboardAwareScrollView>
-      </View>
-      {/* Camera */}
-      <View
-        style={[
-          {
-            display: isCameraOn ? 'flex' : 'none',
-            position: 'absolute',
-            top: '35%',
-            width: '50%',
-            height: '30%',
-            zIndex: 2,
-            alignContent: 'center',
-            alignItems: 'center',
-            alignSelf: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            opacity: 0.5,
-          },
-        ]}
-      >
-        {device && (
-          <Camera
-            style={[
-              StyleSheet.absoluteFill,
-              { display: isCameraOn ? 'flex' : 'none', flex: 1 },
-            ]}
-            device={device}
-            isActive={isCameraOn}
-            codeScanner={codeScanner}
-          />
-        )}
-        <AppButton
-          title="X"
-          customStyle={[
+          </KeyboardAwareScrollView>
+        </View>
+        {/* Camera */}
+        <View
+          style={[
             {
+              display: isCameraOn ? 'flex' : 'none',
               position: 'absolute',
-              bottom: 10,
-              width: 50,
-              height: 50,
-              borderRadius: 500,
+              top: '35%',
+              width: '50%',
+              height: '30%',
+              zIndex: 2,
+              alignContent: 'center',
+              alignItems: 'center',
+              alignSelf: 'center',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              opacity: 0.5,
             },
           ]}
-          onPress={() => {
-            setIsCameraOn(false);
-          }}
+        >
+          {device && (
+            <Camera
+              style={[
+                StyleSheet.absoluteFill,
+                { display: isCameraOn ? 'flex' : 'none', flex: 1 },
+              ]}
+              device={device}
+              isActive={isCameraOn}
+              codeScanner={codeScanner}
+            />
+          )}
+          <AppButton
+            title="X"
+            customStyle={[
+              {
+                position: 'absolute',
+                bottom: 10,
+                width: 50,
+                height: 50,
+                borderRadius: 500,
+              },
+            ]}
+            onPress={() => {
+              setIsCameraOn(false);
+              onSubmit();
+            }}
+          />
+        </View>
+
+        <CalendarModal
+          visible={modalCalendarVisible}
+          selectedDate={docDate}
+          onDateSelect={handleDateSelect}
+          onClose={() => setModalCalendarVisible(!modalCalendarVisible)}
         />
       </View>
-      <UserInfoModal
-        type={type}
-        visible={showModal}
-        onClose={handleModalClose}
-      />
-      <CalendarModal
-        visible={modalCalendarVisible}
-        selectedDate={docDate}
-        onDateSelect={handleDateSelect}
-        onClose={() => setModalCalendarVisible(!modalCalendarVisible)}
-      />
-      <AppToast
-        message={toastMessage}
-        visible={toastVisible}
-        duration={3000}
-        onHide={() => setToastVisible(false)}
-      />
-    </View>
+    </LinearGradient>
   );
 };
 

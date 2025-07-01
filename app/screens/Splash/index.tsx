@@ -36,16 +36,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.primary,
+
     paddingVertical: Spacing.xxlarge,
-    paddingHorizontal: Spacing.lagre,
+    paddingHorizontal: Spacing.large,
   },
   splash: {
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
     marginVertical: Spacing.xxlarge,
-    marginHorizontal: Spacing.lagre,
+    marginHorizontal: Spacing.large,
   },
 });
 

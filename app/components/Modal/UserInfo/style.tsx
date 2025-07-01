@@ -11,13 +11,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   button: {
-    backgroundColor: Colors.primary,
     borderRadius: 20,
     justifyContent: 'center',
     alignContent: 'center',
     paddingVertical: Spacing.small,
     marginBottom: Spacing.small,
-    marginHorizontal: Spacing.lagre,
+    marginHorizontal: Spacing.large,
     height: 50,
   },
   modalContent: {

@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import { logout } from '../../../redux/reducers/userSlice';
 import { navigate } from '../../../navigation/RootNavigator';
 import { dataMenu } from './dataMenu';
+import LinearGradient from 'react-native-linear-gradient';
 
 interface Props {
   navigation: any;
@@ -25,49 +26,65 @@ const MenuScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <NavBar title={TITLES.menu} onPress={() => navigation.goBack()} />
-      <View style={AppStyles.body}>
-        <View
-          style={{
-            marginTop: Spacing.medium,
-            borderRadius: 50,
-            flexDirection: 'row', // Create two columns
-            paddingHorizontal: Spacing.small,
-            paddingVertical: Spacing.lagre,
-            backgroundColor: Colors.Gray,
-          }}
-        >
-          <View style={{ flex: 1, paddingHorizontal: Spacing.medium }}>
-            {dataMenu.slice(0, dataMenu.length / 2).map(item => (
-              <AppButton
-                customStyle={[
-                  {
-                    marginBottom: Spacing.lagre,
-                    paddingHorizontal: Spacing.small,
-                    height: 50,
-                  },
-                ]}
-                key={item.id}
-                title={item.title}
-                onPress={() => handleButtonPress(item.screenName)}
-              />
-            ))}
-          </View>
+    <LinearGradient
+      colors={[Colors.primary, '#ffffff']}
+      style={styles.container}
+    >
+      <View style={styles.container}>
+        <NavBar title={TITLES.menu} onPress={() => navigation.goBack()} />
+        <View style={AppStyles.body}>
+          <View
+            style={{
+              marginTop: Spacing.medium,
+              borderColor: Colors.white,
+              borderWidth: 2,
+              borderRadius: 50,
 
-          <View style={{ flex: 1, paddingHorizontal: Spacing.medium }}>
+              flex: 1,
+              flexDirection: 'row', // Create two columns
+              paddingHorizontal: Spacing.small,
+              paddingVertical: Spacing.large,
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                paddingHorizontal: Spacing.medium,
+                justifyContent: 'space-around',
+              }}
+            >
+              {dataMenu.slice(0, dataMenu.length).map(item => (
+                <AppButton
+                  customStyle={[
+                    {
+                      marginBottom: Spacing.large,
+                      paddingHorizontal: Spacing.small,
+                      height: 50,
+                      borderWidth: 1,
+                      borderColor: Colors.white,
+                    },
+                  ]}
+                  key={item.id}
+                  title={item.title}
+                  onPress={() => handleButtonPress(item.screenName)}
+                />
+              ))}
+            </View>
+
+            {/* <View style={{ flex: 1, paddingHorizontal: Spacing.medium }}>
             {dataMenu.slice(dataMenu.length / 2).map(item => (
               <AppButton
-                customStyle={[{ marginBottom: Spacing.lagre, height: 50 }]}
+                customStyle={[{ marginBottom: Spacing.large, height: 50 }]}
                 key={item.id}
                 title={item.title}
                 onPress={() => handleButtonPress(item.screenName)}
               />
             ))}
+          </View> */}
           </View>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 
@@ -75,7 +92,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: Colors.primary,
   },
   buttonGroup: {
     justifyContent: 'space-between',

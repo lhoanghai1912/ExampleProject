@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: Spacing.small,
-    backgroundColor: Colors.primary,
+    //
     paddingTop: 50,
   },
   navTitle: {

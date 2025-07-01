@@ -5,37 +5,57 @@ import { Fonts } from '../../utils/fontSize';
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.primary,
     flex: 1,
+
     justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.medium,
   },
   logo: {
-    width: 300,
-    height: 150,
-    alignSelf: 'center',
+    width: 250,
+    height: 100,
+    marginBottom: Spacing.large,
   },
   wrapLogin: {
-    paddingVertical: Spacing.medium,
-    paddingHorizontal: Spacing.medium,
-    marginHorizontal: Spacing.lagre,
+    width: '100%',
+    maxWidth: 380,
     backgroundColor: Colors.white,
+    padding: Spacing.large,
+    borderRadius: 16,
+    borderWidth: 1,
     borderColor: Colors.lightGray,
-    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  title: {
+    fontSize: Fonts.xlarge,
+    fontWeight: '600',
+    color: Colors.primary,
+    textAlign: 'center',
+    marginBottom: Spacing.large,
   },
   inputText: {
-    fontSize: Fonts.large,
-    borderColor: Colors.lightGray,
     backgroundColor: Colors.lightGray,
-    borderRadius: 20,
-  },
-  text: {
+    borderRadius: 12,
+    paddingHorizontal: Spacing.medium,
+    paddingVertical: Spacing.small,
     fontSize: Fonts.normal,
-    justifyContent: 'center',
-    textAlign: 'right',
-    color: Colors.primary,
+    marginBottom: Spacing.medium,
   },
-  bodyItem: {
-    marginBottom: Spacing.small,
+  forgotWrapper: {
+    alignItems: 'flex-end',
+    marginBottom: Spacing.medium,
+  },
+  forgotText: {
+    fontSize: Fonts.normal,
+    color: Colors.primary,
+    textDecorationLine: 'underline',
+  },
+  loginButton: {
+    borderRadius: 12,
   },
 });
 

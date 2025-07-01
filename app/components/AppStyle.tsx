@@ -96,7 +96,26 @@ const AppStyles = StyleSheet.create({
     paddingHorizontal: Spacing.medium,
   },
   scrollContent: {
-    paddingBottom: Spacing.lagre, // Đảm bảo có đủ không gian khi cuộn
+    paddingBottom: Spacing.large, // Đảm bảo có đủ không gian khi cuộn
+  },
+  dropdownWrapper: {
+    position: 'relative', // Quan trọng để định vị dropdown tuyệt đối bên trong
+  },
+  dropdown: {
+    position: 'absolute',
+    top: 90, // Tùy chỉnh tùy theo chiều cao input
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    zIndex: 100,
+  },
+  dropdownItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
 });
 

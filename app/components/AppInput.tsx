@@ -124,6 +124,11 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 2,
     opacity: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
   },
   errorBorder: {
     borderColor: '#ff5a5f',

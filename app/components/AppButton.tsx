@@ -59,6 +59,12 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     paddingVertical: Spacing.small,
     paddingHorizontal: Spacing.medium,
+    height: 50,
+    elevation: 3,
+    shadowColor: Colors.primary,
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
   },
   buttonDisabled: {
     color: Colors.black,

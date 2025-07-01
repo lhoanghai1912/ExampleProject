@@ -1,23 +1,17 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TextInput,
-  TouchableOpacity,
-} from 'react-native';
-import AppStyles from '../../components/AppStyle';
-import { IMAGES, TITLES } from '../../utils/constants';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
 
+import AppStyles from '../../components/AppStyle';
 import AppButton from '../../components/AppButton';
 import AppInput from '../../components/AppInput';
-import styles from './style';
-import { useDispatch } from 'react-redux';
+
 import { setToken, setUserData } from '../../redux/reducers/userSlice';
-import NavBar from '../../components/Navbar';
-import { Spacing } from '../../utils/spacing';
+import { IMAGES, TITLES } from '../../utils/constants';
+import styles from './style';
+import LinearGradient from 'react-native-linear-gradient';
+import { Colors } from '../../utils/color';
 
 interface Props {
   navigation: any;
@@ -28,103 +22,100 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [username, setUsername] = useState('manager');
   const [password, setPassword] = useState('sapb1');
   const dispatch = useDispatch();
-  const token1 = '123abc1';
-  const handleBack = async () => {
-    navigation.goBack();
-  };
 
   const handleLogin = async () => {
-    console.log('Login Pressed');
     try {
-      await AsyncStorage.setItem('accesstoken', token1);
-      // console.log('Dispatching user data: ', { userData: data });
+      const token = '123abc1';
+      await AsyncStorage.setItem('accesstoken', token);
+
       dispatch(
         setUserData({
           userData: {
-            username: username,
-            password: password,
-            token: token1,
+            username,
+            password,
+            token,
             fullname: 'User Test',
           },
         }),
       );
-      dispatch(setToken({ token: token1 }));
+
+      dispatch(setToken({ token }));
     } catch (error) {
-      console.log('error ', error);
+      console.log('Login error:', error);
     }
-
-    // try {
-    //   const response = await fetch('https://160.30.252.14:50000/b1s/v1/Login', {
-    //     method: 'POST',
-    //     headers: {
-    //       Accecpt: 'application/json, text/plain, */*',
-    //       'Accept-Encoding': 'gzip, deflate, br',
-    //       'Content-Type': 'application/json',
-    //       Connection: 'keep-alive',
-    //     },
-    //     body: JSON.stringify({
-    //       CompanyDB: 'DEMO - 2',
-    //       UserName: 'manager',
-    //       Password: 'sapb1',
-    //     }),
-    //   });
-    //   console.log('abcccccc');
-
-    //   const data = await response.json();
-    //   if (response.ok) {
-    //     console.log('Login successful', data);
-    //     return data;
-    //   } else {
-    //     console.error('Login failed', data);
-    //     return null;
-    //   }
-    // } catch (error) {
-    //   console.error('Error during login:', error);
-    //   console.log('Error during login:', error);
-
-    //   return null;
-    // }
   };
+  // const handleLogin = async () => {
+  //   try {
+  //     const response = await fetch('https://160.30.252.14:50000/b1s/v1/Login', {
+  //       method: 'POST',
+  //       headers: {
+  //         Accecpt: 'application/json, text/plain, */*',
+  //         'Accept-Encoding': 'gzip, deflate, br',
+  //         'Content-Type': 'application/json',
+  //         Connection: 'keep-alive',
+  //       },
+  //       body: JSON.stringify({
+  //         CompanyDB: 'DEMO - 2',
+  //         UserName: 'manager',
+  //         Password: 'sapb1',
+  //       }),
+  //     });
+  //     console.log('abcccccc');
+
+  //     const data = await response.json();
+  //     if (response.ok) {
+  //       console.log('Login successful', data);
+  //       return data;
+  //     } else {
+  //       console.error('Login failed', data);
+  //       return null;
+  //     }
+  //   } catch (error) {
+  //     console.log('Error during login:', error);
+
+  //     return null;
+  //   }
+  // };
 
   return (
-    <View style={styles.container}>
-      {/* <NavBar title="Đăng nhập" onPress={handleBack} /> */}
+    <LinearGradient
+      colors={[Colors.primary, '#ffffff']}
+      style={styles.container}
+    >
+      {/* <View style={styles.container}> */}
       <Image source={IMAGES.foxAI} style={styles.logo} resizeMode="contain" />
+
       <View style={styles.wrapLogin}>
-        <View style={styles.bodyItem}>
-          <Text style={AppStyles.title}>{TITLES.login}</Text>
-        </View>
-        <View style={styles.bodyItem}>
-          <AppInput
-            placeholder="Usesname"
-            style={styles.inputText}
-            value={username}
-            onChangeText={setUsername}
-          ></AppInput>
-          <AppInput
-            placeholder="Password"
-            style={[styles.inputText]}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry={true}
-          ></AppInput>
-        </View>
-        <View style={[styles.bodyItem]}>
-          <TouchableOpacity style={{ justifyContent: 'center' }}>
-            <Text style={[styles.text, { marginBottom: Spacing.small }]}>
-              Quên mật khẩu?
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.bodyItem}>
-          <AppButton
-            disabled={!(username && password)}
-            title={TITLES.login}
-            onPress={handleLogin}
-          />
-        </View>
+        <Text style={styles.title}>{TITLES.login}</Text>
+
+        <AppInput
+          placeholder="Tên đăng nhập"
+          value={username}
+          onChangeText={setUsername}
+          style={styles.inputText}
+        />
+
+        <AppInput
+          placeholder="Mật khẩu"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          style={styles.inputText}
+        />
+
+        <TouchableOpacity style={styles.forgotWrapper}>
+          <Text style={styles.forgotText}>Quên mật khẩu?</Text>
+        </TouchableOpacity>
+
+        <AppButton
+          title="Đăng nhập"
+          onPress={handleLogin}
+          disabled={!(username && password)}
+          customStyle={[styles.loginButton]}
+        />
       </View>
-    </View>
+      {/* </View> */}
+    </LinearGradient>
   );
 };
 

@@ -21,26 +21,38 @@ import PasswordModal from '../../../components/Modal/Password';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setUserData } from '../../../redux/reducers/userSlice';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import LinearGradient from 'react-native-linear-gradient';
 
 interface Props {
   navigation: any;
   route: any;
 }
+
 const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useDispatch();
   const [Username, setUsername] = useState('');
   const [Fullname, setFullname] = useState('');
-  const [showModal, setShowModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [type, setType] = useState('');
   const [submitted, setSubmitted] = useState(false);
-  const [selectedField, setSelectedField] = useState('');
-
+  const [showIndex, setShowIndex] = useState<number | null>(null);
   const [fields, setFields] = useState<{ [key: string]: string }>({
     Fullname: '',
     department: '',
     center: '',
   });
+  const data = [
+    {
+      label: 'Phòng ban',
+      field: 'department',
+      data: ['Phòng Kinh Doanh', 'Phòng Marketing', 'Phòng IT'],
+    },
+    {
+      label: 'Chức vụ',
+      field: 'center',
+      data: ['Manager', 'Developer', 'Designer'],
+    },
+  ];
   const { userData } = useSelector((state: any) => state.user);
   useEffect(() => {
     const loadData = async () => {
@@ -56,21 +68,12 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
     };
     loadData();
   }, [AsyncStorage]);
-  const handlePressModal = (type: string) => {
-    setType(type);
-    setShowModal(true);
-  };
+
   const [inputStyles, setInputStyles] = useState<{ [key: string]: object }>({
     department: {},
     center: {},
   });
 
-  const handleModalClose = (data: string | null) => {
-    setShowModal(false);
-    if (data) {
-      setFields(prev => ({ ...prev, [selectedField]: data }));
-    }
-  };
   useEffect(() => {
     if (submitted) {
       const updateInputstyle: any = {};
@@ -120,7 +123,7 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
         type: 'error',
         position: 'top',
         text1: 'Error',
-        text2: `Vui lòng họ tên`,
+        text2: `Vui lòng điền họ tên`,
         visibilityTime: 1500,
         autoHide: true,
       });
@@ -151,105 +154,123 @@ const UserInfo_Screen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={{ backgroundColor: Colors.primary }}>
-        <NavBar title={TITLES.user} onPress={() => navigation.goBack()} />
-      </View>
-      <View style={[AppStyles.body]}>
-        <View style={styles.wrapBody}>
-          <TouchableOpacity>
-            <Image
-              source={IMAGES.avtar}
-              style={[
-                AppStyles.avartar,
-                { alignSelf: 'center', width: 200, height: 200 },
-              ]}
-            />
-          </TouchableOpacity>
-          <View>
-            <View>
-              <Text style={AppStyles.label}>User Name</Text>
-              <Text style={AppStyles.disable}>{Username}</Text>
-            </View>
-            <AppInput
-              label="Fullname"
-              placeholder="Fullname"
-              value={Fullname}
-              onChangeText={setFullname}
-              style={inputStyles[Fullname]}
-            />
-            {[
-              { label: 'Phòng ban', field: 'department' },
-              { label: 'Chức vụ', field: 'center' },
-            ].map(({ label, field }, index) => (
-              <View key={index} style={{ marginBottom: Spacing.small }}>
-                <Text style={AppStyles.label}>{label}</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setSelectedField(field);
-                    handlePressModal(field);
-                  }}
-                >
-                  <Text style={[AppStyles.input, inputStyles[field]]}>
-                    {fields[field]}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-            <TouchableOpacity onPress={() => setShowPasswordModal(true)}>
-              <Text style={styles.changePassword}> Đổi mật khẩu</Text>
+    <LinearGradient
+      colors={[Colors.primary, '#ffffff']}
+      style={styles.container}
+    >
+      <View style={styles.container}>
+        <View>
+          <NavBar title={TITLES.user} onPress={() => navigation.goBack()} />
+        </View>
+        <View style={[AppStyles.body]}>
+          <View style={styles.wrapBody}>
+            <TouchableOpacity>
+              <Image
+                source={IMAGES.avtar}
+                style={[
+                  AppStyles.avartar,
+                  { alignSelf: 'center', width: 200, height: 200 },
+                ]}
+              />
             </TouchableOpacity>
+            <View>
+              <View>
+                <Text style={AppStyles.label}>User Name</Text>
+                <Text style={AppStyles.disable}>{Username}</Text>
+              </View>
+              <AppInput
+                label="Fullname"
+                placeholder="Fullname"
+                value={Fullname}
+                onChangeText={setFullname}
+                style={inputStyles[Fullname]}
+              />
+              <View>
+                {data.map((dropdown, idx) => (
+                  <View key={idx} style={AppStyles.dropdownWrapper}>
+                    <Text style={AppStyles.label}>{dropdown.label}</Text>
+                    <TouchableOpacity
+                      onPress={() =>
+                        setShowIndex(showIndex === idx ? null : idx)
+                      }
+                    >
+                      <Text
+                        style={[AppStyles.input, inputStyles[dropdown.field]]}
+                      >
+                        {fields[dropdown.field] || 'Select value'}
+                      </Text>
+                    </TouchableOpacity>
 
-            <AppButton
-              onPress={() => handleSummit()}
-              title={TITLES.accept}
-              customStyle={[
-                {
-                  marginHorizontal: Spacing.medium,
-                  marginVertical: Spacing.small,
-                },
-              ]}
-            />
+                    {showIndex === idx && (
+                      <View style={AppStyles.dropdown}>
+                        {dropdown.data.map((item: string, i: number) => (
+                          <TouchableOpacity
+                            key={i}
+                            style={AppStyles.dropdownItem}
+                            onPress={() => {
+                              setFields(prev => ({
+                                ...prev,
+                                [dropdown.field]: item,
+                              }));
+                              setShowIndex(null);
+                            }}
+                          >
+                            <Text style={AppStyles.text}>{item}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
+                    )}
+                  </View>
+                ))}
+              </View>
+              <TouchableOpacity onPress={() => setShowPasswordModal(true)}>
+                <Text style={styles.changePassword}> Đổi mật khẩu</Text>
+              </TouchableOpacity>
+              <AppButton
+                onPress={() => handleSummit()}
+                title={TITLES.accept}
+                customStyle={[
+                  {
+                    marginHorizontal: Spacing.medium,
+                    marginVertical: Spacing.small,
+                  },
+                ]}
+              />
+            </View>
           </View>
         </View>
+        <PasswordModal
+          visible={showPasswordModal}
+          onClose={() => {
+            setShowPasswordModal(false);
+          }}
+        />
       </View>
-      <UserInfoModal
-        type={type}
-        visible={showModal}
-        onClose={handleModalClose}
-      />
-      <PasswordModal
-        visible={showPasswordModal}
-        onClose={() => {
-          setShowPasswordModal(false);
-        }}
-      />
-    </View>
+    </LinearGradient>
   );
 };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: Colors.primary,
   },
   wrapBody: {
-    // flex: 1,
+    flex: 1,
     borderRadius: 50,
-    marginTop: Spacing.lagre,
-    paddingVertical: Spacing.lagre,
+    marginTop: Spacing.large,
+    paddingVertical: Spacing.large,
     paddingHorizontal: Spacing.medium,
-    justifyContent: 'space-around',
-    // marginHorizontal: Spacing.medium,
-    backgroundColor: Colors.Gray,
+    borderColor: Colors.white,
+    borderWidth: 2,
   },
 
   changePassword: {
-    color: 'navy',
+    color: Colors.primary,
     textAlign: 'right',
     fontSize: Fonts.normal,
     paddingHorizontal: Spacing.medium,
     marginBottom: Spacing.medium,
+    textDecorationLine: 'underline',
   },
 });
 

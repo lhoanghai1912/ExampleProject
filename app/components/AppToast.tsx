@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     top: '10%',
     left: '10%',
     right: '10%',
-    backgroundColor: Colors.primary,
+
     padding: Spacing.medium,
     borderRadius: 8,
     justifyContent: 'center',

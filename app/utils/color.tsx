@@ -1,7 +1,7 @@
 // app/utils/colors.ts
 
 export const Colors = {
-  primary: '#1a86c5',
+  primary: '#44ABEB',
   secondary: '#03dac6',
   background: '#f5f5f5',
   white: '#ffffff',
@@ -10,4 +10,5 @@ export const Colors = {
   border: '#e1e1e1',
   Gray: '#abb8c3',
   lightGray: '#EAEFEF',
+  darkGray: '#333333',
 };
